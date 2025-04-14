@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { setCurrencyLocale as setAppCurrencyLocale } from '@/utils/currency';
@@ -14,9 +15,8 @@ interface User {
   role: string;
 }
 
-// Create a more specific type for the context value
-// to avoid circular references and excessive type instantiation
-interface AppContextType {
+// Create the context type without direct references to self
+interface AppContextValue {
   theme: Theme;
   setTheme: (theme: Theme) => void;
   language: Language;
@@ -29,8 +29,8 @@ interface AppContextType {
   logout: () => void;
 }
 
-// Create the context with a proper initial value to avoid type issues
-const AppContext = createContext<AppContextType | undefined>(undefined);
+// Initial null context that must be defined
+const AppContext = createContext<AppContextValue | null>(null);
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { i18n } = useTranslation();
@@ -91,16 +91,16 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     checkAuth();
   }, []);
   
-  // Handler functions with explicit return types to prevent circular inference
-  const handleSetTheme = (newTheme: Theme): void => {
+  // Simple handler functions with no references to the context
+  const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
   };
   
-  const handleSetLanguage = (newLang: Language): void => {
+  const setLanguage = (newLang: Language) => {
     setLanguageState(newLang);
   };
   
-  const handleSetCurrencyLocale = (newLocale: CurrencyLocale): void => {
+  const setCurrencyLocale = (newLocale: CurrencyLocale) => {
     setCurrencyLocaleState(newLocale);
   };
   
@@ -134,26 +134,26 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     localStorage.removeItem('user');
   };
   
-  // Create a properly typed context value object
-  const contextValue: AppContextType = {
+  // Prepare the value object without type annotation to prevent circular reference
+  const value = {
     theme,
-    setTheme: handleSetTheme,
+    setTheme,
     language,
-    setLanguage: handleSetLanguage,
+    setLanguage,
     currencyLocale,
-    setCurrencyLocale: handleSetCurrencyLocale,
+    setCurrencyLocale,
     isAuthenticated,
     user,
     login,
     logout
   };
   
-  return <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>;
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
 
-export const useApp = (): AppContextType => {
+export const useApp = () => {
   const context = useContext(AppContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useApp must be used within an AppProvider');
   }
   return context;
