@@ -7,6 +7,9 @@ export default {
   'app.login': 'Login',
   'app.register': 'Register',
 
+  // Common
+  'common.loading': 'Loading...',
+  
   // Sidebar
   'sidebar.dashboard': 'Dashboard',
   'sidebar.financial': 'Financial',
@@ -69,4 +72,10 @@ export default {
   'auth.password': 'Password',
   'auth.confirmPassword': 'Confirm password',
   'auth.name': 'Name',
+  'auth.loginSuccess': 'Login successful',
+  'auth.welcomeBack': 'Welcome back!',
+  'auth.loginFailed': 'Login failed',
+  'auth.invalidCredentials': 'Invalid credentials',
+  'auth.adminLogin': 'Admin Access',
+  'auth.adminInstructions': 'Use admin credentials to access',
 };

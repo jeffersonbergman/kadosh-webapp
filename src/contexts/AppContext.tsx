@@ -15,6 +15,10 @@ interface User {
   role: string;
 }
 
+// Admin credentials
+const ADMIN_EMAIL = 'admin@igreja.com';
+const ADMIN_PASSWORD = 'admin123';
+
 // Define the context interface without any self-references
 interface AppContextValue {
   theme: Theme;
@@ -29,7 +33,7 @@ interface AppContextValue {
   logout: () => void;
 }
 
-// Create the context with null as initial value
+// Create the context with a default value
 const AppContext = createContext<AppContextValue | null>(null);
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -73,8 +77,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   // Efeito para verificar autenticação ao carregar
   useEffect(() => {
     const checkAuth = () => {
-      // Aqui seria uma verificação real com backend
-      // Por enquanto, apenas simulamos com localStorage
       const storedUser = localStorage.getItem('user');
       if (storedUser) {
         try {
@@ -105,16 +107,29 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
   
   const login = async (email: string, password: string): Promise<void> => {
-    // Simulação de login - em produção, isso seria uma chamada de API
     return new Promise<void>((resolve, reject) => {
       setTimeout(() => {
-        if (email && password) {
-          // Mock user
+        // Verifica se as credenciais são do admin
+        if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+          const adminUser = {
+            id: 'admin-1',
+            name: 'Administrador',
+            email: ADMIN_EMAIL,
+            role: 'admin'
+          };
+          
+          setUser(adminUser);
+          setIsAuthenticated(true);
+          localStorage.setItem('user', JSON.stringify(adminUser));
+          resolve();
+        } 
+        // Verificação para outros usuários simulados (mantém a lógica anterior)
+        else if (email && password) {
           const mockUser = {
             id: '1',
             name: 'Usuário da Igreja',
             email,
-            role: 'admin'
+            role: 'user'
           };
           
           setUser(mockUser);
@@ -124,7 +139,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         } else {
           reject(new Error('Credenciais inválidas'));
         }
-      }, 1000);
+      }, 500);
     });
   };
   
