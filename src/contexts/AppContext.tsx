@@ -97,7 +97,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setLanguageState(newLang);
   };
   
-  const setCurrencyLocaleInternal = (newLocale: CurrencyLocale) => {
+  const setCurrencyLocale = (newLocale: CurrencyLocale) => {
     setCurrencyLocaleState(newLocale);
   };
   
@@ -131,13 +131,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     localStorage.removeItem('user');
   };
   
-  const value: AppContextType = {
+  const value = {
     theme,
     setTheme,
     language,
     setLanguage,
     currencyLocale,
-    setCurrencyLocale: setCurrencyLocaleInternal,
+    setCurrencyLocale,
     isAuthenticated,
     user,
     login,
