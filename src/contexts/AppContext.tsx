@@ -15,7 +15,7 @@ interface User {
   role: string;
 }
 
-// Create the context type without direct references to self
+// Define the context interface without any self-references
 interface AppContextValue {
   theme: Theme;
   setTheme: (theme: Theme) => void;
@@ -29,7 +29,7 @@ interface AppContextValue {
   logout: () => void;
 }
 
-// Initial null context that must be defined
+// Create the context with null as initial value
 const AppContext = createContext<AppContextValue | null>(null);
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -91,20 +91,20 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     checkAuth();
   }, []);
   
-  // Simple handler functions with no references to the context
-  const setTheme = (newTheme: Theme) => {
+  // Handler functions defined separately to avoid circular references
+  const setTheme = (newTheme: Theme): void => {
     setThemeState(newTheme);
   };
   
-  const setLanguage = (newLang: Language) => {
+  const setLanguage = (newLang: Language): void => {
     setLanguageState(newLang);
   };
   
-  const setCurrencyLocale = (newLocale: CurrencyLocale) => {
+  const setCurrencyLocale = (newLocale: CurrencyLocale): void => {
     setCurrencyLocaleState(newLocale);
   };
   
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<void> => {
     // Simulação de login - em produção, isso seria uma chamada de API
     return new Promise<void>((resolve, reject) => {
       setTimeout(() => {
@@ -128,14 +128,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     });
   };
   
-  const logout = () => {
+  const logout = (): void => {
     setUser(null);
     setIsAuthenticated(false);
     localStorage.removeItem('user');
   };
   
-  // Prepare the value object without type annotation to prevent circular reference
-  const value = {
+  // Create context value object with explicit type to prevent circular references
+  const contextValue: AppContextValue = {
     theme,
     setTheme,
     language,
@@ -148,12 +148,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     logout
   };
   
-  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+  return <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>;
 };
 
-export const useApp = () => {
+export const useApp = (): AppContextValue => {
   const context = useContext(AppContext);
-  if (!context) {
+  if (context === null) {
     throw new Error('useApp must be used within an AppProvider');
   }
   return context;
