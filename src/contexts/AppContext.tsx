@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { useTranslation } from 'react-i18next';
 import { setCurrencyLocale as setAppCurrencyLocale } from '@/utils/currency';
 
+// Define our types separately
 type Theme = 'light' | 'dark';
 type Language = 'pt' | 'en' | 'es';
 type CurrencyLocale = 'pt-BR' | 'en-US' | 'en-GB' | 'es-ES' | 'de-DE' | 'fr-FR';
@@ -14,6 +15,7 @@ interface User {
   role: string;
 }
 
+// Define the context type
 interface AppContextType {
   theme: Theme;
   setTheme: (theme: Theme) => void;
@@ -27,7 +29,7 @@ interface AppContextType {
   logout: () => void;
 }
 
-// Create context with a default undefined value
+// Create context with undefined default and explicit type
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -89,17 +91,18 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     checkAuth();
   }, []);
   
-  const setTheme = (newTheme: Theme) => {
+  // Handler functions that don't reference their own name in the context
+  function handleSetTheme(newTheme: Theme) {
     setThemeState(newTheme);
-  };
+  }
   
-  const setLanguage = (newLang: Language) => {
+  function handleSetLanguage(newLang: Language) {
     setLanguageState(newLang);
-  };
+  }
   
-  const setCurrencyLocale = (newLocale: CurrencyLocale) => {
+  function handleSetCurrencyLocale(newLocale: CurrencyLocale) {
     setCurrencyLocaleState(newLocale);
-  };
+  }
   
   const login = async (email: string, password: string) => {
     // Simulação de login - em produção, isso seria uma chamada de API
@@ -131,20 +134,21 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     localStorage.removeItem('user');
   };
   
-  const value = {
+  // Create the context value with explicit typing
+  const contextValue: AppContextType = {
     theme,
-    setTheme,
+    setTheme: handleSetTheme,
     language,
-    setLanguage,
+    setLanguage: handleSetLanguage,
     currencyLocale,
-    setCurrencyLocale,
+    setCurrencyLocale: handleSetCurrencyLocale,
     isAuthenticated,
     user,
     login,
     logout
   };
   
-  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+  return <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>;
 };
 
 export const useApp = (): AppContextType => {
