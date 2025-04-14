@@ -19,7 +19,7 @@ interface User {
 const ADMIN_EMAIL = 'admin@igreja.com';
 const ADMIN_PASSWORD = 'admin123';
 
-// Define the context interface without any self-references
+// Define the context interface
 interface AppContextValue {
   theme: Theme;
   setTheme: (theme: Theme) => void;
@@ -34,7 +34,7 @@ interface AppContextValue {
 }
 
 // Create the context with a default value
-const AppContext = createContext<AppContextValue | null>(null);
+const AppContext = createContext<AppContextValue | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { i18n } = useTranslation();
@@ -56,25 +56,41 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   
-  // Efeito para aplicar o tema
+  // Apply theme effect
   useEffect(() => {
     localStorage.setItem('theme', theme);
     document.documentElement.classList.toggle('dark', theme === 'dark');
   }, [theme]);
   
-  // Efeito para aplicar o idioma
+  // Apply language effect
   useEffect(() => {
     localStorage.setItem('language', language);
     i18n.changeLanguage(language);
   }, [language, i18n]);
   
-  // Efeito para aplicar a moeda
+  // Apply currency effect - now based on language/region
   useEffect(() => {
-    localStorage.setItem('currency-locale', currencyLocale);
-    setAppCurrencyLocale(currencyLocale);
-  }, [currencyLocale]);
+    // Map language to appropriate currency locale
+    let newCurrencyLocale: CurrencyLocale;
+    switch (language) {
+      case 'en':
+        newCurrencyLocale = 'en-US';
+        break;
+      case 'es':
+        newCurrencyLocale = 'es-ES';
+        break;
+      case 'pt':
+      default:
+        newCurrencyLocale = 'pt-BR';
+        break;
+    }
+    
+    setCurrencyLocaleState(newCurrencyLocale);
+    localStorage.setItem('currency-locale', newCurrencyLocale);
+    setAppCurrencyLocale(newCurrencyLocale);
+  }, [language]);
   
-  // Efeito para verificar autenticação ao carregar
+  // Check authentication on load
   useEffect(() => {
     const checkAuth = () => {
       const storedUser = localStorage.getItem('user');
@@ -93,7 +109,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     checkAuth();
   }, []);
   
-  // Handler functions defined separately to avoid circular references
+  // Define handler functions
   const setTheme = (newTheme: Theme): void => {
     setThemeState(newTheme);
   };
@@ -109,7 +125,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const login = async (email: string, password: string): Promise<void> => {
     return new Promise<void>((resolve, reject) => {
       setTimeout(() => {
-        // Verifica se as credenciais são do admin
+        // Check if admin credentials
         if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
           const adminUser = {
             id: 'admin-1',
@@ -123,7 +139,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           localStorage.setItem('user', JSON.stringify(adminUser));
           resolve();
         } 
-        // Verificação para outros usuários simulados (mantém a lógica anterior)
+        // Check for other simulated users
         else if (email && password) {
           const mockUser = {
             id: '1',
@@ -149,7 +165,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     localStorage.removeItem('user');
   };
   
-  // Create context value object with explicit type to prevent circular references
+  // Create context value
   const contextValue: AppContextValue = {
     theme,
     setTheme,
@@ -168,7 +184,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
 export const useApp = (): AppContextValue => {
   const context = useContext(AppContext);
-  if (context === null) {
+  if (context === undefined) {
     throw new Error('useApp must be used within an AppProvider');
   }
   return context;

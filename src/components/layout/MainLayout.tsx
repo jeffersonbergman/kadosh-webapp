@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from "@/components/ui/button";
 import { 
   Menu, X, Home, DollarSign, Users, Music, 
-  ChevronDown, LogOut, Settings, Globe
+  ChevronDown, LogOut, Settings, Globe, Sun, Moon, User
 } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 import { toast } from 'sonner';
@@ -16,6 +16,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu";
 
 const MainLayout = ({ children }: { children: React.ReactNode }) => {
@@ -23,7 +25,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { logout, user } = useApp();
+  const { logout, user, theme, setTheme, language, setLanguage } = useApp();
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -33,6 +35,16 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
     logout();
     toast.success(t('auth.logoutSuccess'));
     navigate('/login');
+  };
+
+  const handleLanguageChange = (value: string) => {
+    setLanguage(value as 'pt' | 'en' | 'es');
+    toast.success(t('settings.languageChanged'));
+  };
+
+  const handleThemeChange = (value: string) => {
+    setTheme(value as 'light' | 'dark');
+    toast.success(t('settings.themeChanged'));
   };
 
   const navItems = [
@@ -68,7 +80,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
               </span>
             )}
             
-            {/* Dropdown menu for settings */}
+            {/* Settings Dropdown menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="text-gray-600 flex">
@@ -80,20 +92,43 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
               <DropdownMenuContent className="w-56 bg-white">
                 <DropdownMenuLabel>{t('settings.title')}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => navigate('/configuracoes?tab=language')}>
-                  <Globe className="mr-2 h-4 w-4" />
-                  <span>{t('settings.language')}</span>
+                
+                {/* Language selection directly in the dropdown */}
+                <DropdownMenuItem className="p-0 focus:bg-transparent">
+                  <div className="w-full px-2 py-1.5">
+                    <div className="flex items-center mb-2">
+                      <Globe className="mr-2 h-4 w-4" />
+                      <span>{t('settings.language')}</span>
+                    </div>
+                    <DropdownMenuRadioGroup value={language} onValueChange={handleLanguageChange}>
+                      <DropdownMenuRadioItem value="pt">Português</DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem value="en">English</DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem value="es">Español</DropdownMenuRadioItem>
+                    </DropdownMenuRadioGroup>
+                  </div>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/configuracoes?tab=currency')}>
-                  <DollarSign className="mr-2 h-4 w-4" />
-                  <span>{t('settings.currency')}</span>
+                
+                <DropdownMenuSeparator />
+                
+                {/* Theme selection directly in the dropdown */}
+                <DropdownMenuItem className="p-0 focus:bg-transparent">
+                  <div className="w-full px-2 py-1.5">
+                    <div className="flex items-center mb-2">
+                      {theme === 'light' ? <Sun className="mr-2 h-4 w-4" /> : <Moon className="mr-2 h-4 w-4" />}
+                      <span>{t('settings.theme')}</span>
+                    </div>
+                    <DropdownMenuRadioGroup value={theme} onValueChange={handleThemeChange}>
+                      <DropdownMenuRadioItem value="light">{t('settings.lightTheme')}</DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem value="dark">{t('settings.darkTheme')}</DropdownMenuRadioItem>
+                    </DropdownMenuRadioGroup>
+                  </div>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/configuracoes?tab=theme')}>
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>{t('settings.theme')}</span>
-                </DropdownMenuItem>
+                
+                <DropdownMenuSeparator />
+                
+                {/* Profile option - clickable to open profile page */}
                 <DropdownMenuItem onClick={() => navigate('/configuracoes?tab=profile')}>
-                  <Users className="mr-2 h-4 w-4" />
+                  <User className="mr-2 h-4 w-4" />
                   <span>{t('settings.profile')}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
