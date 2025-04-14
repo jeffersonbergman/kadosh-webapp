@@ -9,6 +9,14 @@ import {
 } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 import { toast } from 'sonner';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const MainLayout = ({ children }: { children: React.ReactNode }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -59,10 +67,38 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
                 {t('app.welcome')}, {user.name}
               </span>
             )}
-            <Button variant="ghost" size="sm" className="text-gray-600 hidden md:flex" onClick={() => navigate('/configuracoes')}>
-              <Settings size={18} className="mr-1" />
-              <span>{t('app.settings')}</span>
-            </Button>
+            
+            {/* Dropdown menu for settings */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="text-gray-600 flex">
+                  <Settings size={18} className="mr-1" />
+                  <span>{t('app.settings')}</span>
+                  <ChevronDown size={16} className="ml-1" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56 bg-white">
+                <DropdownMenuLabel>{t('settings.title')}</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate('/configuracoes?tab=language')}>
+                  <Globe className="mr-2 h-4 w-4" />
+                  <span>{t('settings.language')}</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/configuracoes?tab=currency')}>
+                  <DollarSign className="mr-2 h-4 w-4" />
+                  <span>{t('settings.currency')}</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/configuracoes?tab=theme')}>
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>{t('settings.theme')}</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/configuracoes?tab=profile')}>
+                  <Users className="mr-2 h-4 w-4" />
+                  <span>{t('settings.profile')}</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            
             <Button variant="outline" size="sm" className="text-gray-600" onClick={handleLogout}>
               <LogOut size={18} className="mr-1" />
               <span>{t('app.logout')}</span>
@@ -95,19 +131,6 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
                   </Link>
                 </li>
               ))}
-              <li>
-                <Link
-                  to="/configuracoes"
-                  className={`flex items-center px-4 py-3 rounded-md transition-colors ${
-                    location.pathname === '/configuracoes'
-                      ? 'bg-church-light text-church-primary font-medium'
-                      : 'text-gray-600 hover:bg-gray-100'
-                  }`}
-                >
-                  <Globe size={20} />
-                  <span className="ml-3">{t('settings.title')}</span>
-                </Link>
-              </li>
             </ul>
             
             <div className="border-t border-gray-200 mt-6 pt-4">

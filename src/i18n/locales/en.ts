@@ -6,6 +6,7 @@ export default {
   'app.logout': 'Logout',
   'app.login': 'Login',
   'app.register': 'Register',
+  'app.welcome': 'Welcome',
 
   // Common
   'common.loading': 'Loading...',
@@ -63,6 +64,16 @@ export default {
   'settings.notifications': 'Notifications',
   'settings.profile': 'Profile',
   'settings.security': 'Security',
+  'settings.languageChanged': 'Language updated successfully',
+  'settings.currencyChanged': 'Currency updated successfully',
+  'settings.themeChanged': 'Theme updated successfully',
+  'settings.editProfile': 'Edit Profile',
+  'settings.lightTheme': 'Light',
+  'settings.darkTheme': 'Dark',
+  'settings.languageDescription': 'Choose your preferred language',
+  'settings.currencyDescription': 'Choose your preferred currency format',
+  'settings.themeDescription': 'Choose your preferred theme',
+  'settings.profileDescription': 'Manage your profile information',
   
   // Auth
   'auth.login': 'Login',
@@ -78,4 +89,5 @@ export default {
   'auth.invalidCredentials': 'Invalid credentials',
   'auth.adminLogin': 'Admin Access',
   'auth.adminInstructions': 'Use admin credentials to access',
+  'auth.logoutSuccess': 'Logout successful',
 };

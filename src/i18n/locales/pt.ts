@@ -6,6 +6,7 @@ export default {
   'app.logout': 'Sair',
   'app.login': 'Entrar',
   'app.register': 'Registrar',
+  'app.welcome': 'Bem-vindo',
 
   // Common
   'common.loading': 'Carregando...',
@@ -63,6 +64,16 @@ export default {
   'settings.notifications': 'Notificações',
   'settings.profile': 'Perfil',
   'settings.security': 'Segurança',
+  'settings.languageChanged': 'Idioma atualizado com sucesso',
+  'settings.currencyChanged': 'Moeda atualizada com sucesso',
+  'settings.themeChanged': 'Tema atualizado com sucesso',
+  'settings.editProfile': 'Editar Perfil',
+  'settings.lightTheme': 'Claro',
+  'settings.darkTheme': 'Escuro',
+  'settings.languageDescription': 'Escolha seu idioma preferido',
+  'settings.currencyDescription': 'Escolha seu formato de moeda preferido',
+  'settings.themeDescription': 'Escolha seu tema preferido',
+  'settings.profileDescription': 'Gerencie suas informações de perfil',
   
   // Auth
   'auth.login': 'Entrar',
@@ -78,4 +89,5 @@ export default {
   'auth.invalidCredentials': 'Credenciais inválidas',
   'auth.adminLogin': 'Acesso Administrativo',
   'auth.adminInstructions': 'Use as credenciais de admin para acessar',
+  'auth.logoutSuccess': 'Logout realizado com sucesso',
 };
