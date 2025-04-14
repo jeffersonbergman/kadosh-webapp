@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { setCurrencyLocale as setAppCurrencyLocale } from '@/utils/currency';
@@ -15,7 +14,8 @@ interface User {
   role: string;
 }
 
-// Define the context type
+// Create a more specific type for the context value
+// to avoid circular references and excessive type instantiation
 interface AppContextType {
   theme: Theme;
   setTheme: (theme: Theme) => void;
@@ -29,7 +29,7 @@ interface AppContextType {
   logout: () => void;
 }
 
-// Create context with undefined default and explicit type
+// Create the context with a proper initial value to avoid type issues
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -91,18 +91,18 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     checkAuth();
   }, []);
   
-  // Handler functions that don't reference their own name in the context
-  function handleSetTheme(newTheme: Theme) {
+  // Handler functions with explicit return types to prevent circular inference
+  const handleSetTheme = (newTheme: Theme): void => {
     setThemeState(newTheme);
-  }
+  };
   
-  function handleSetLanguage(newLang: Language) {
+  const handleSetLanguage = (newLang: Language): void => {
     setLanguageState(newLang);
-  }
+  };
   
-  function handleSetCurrencyLocale(newLocale: CurrencyLocale) {
+  const handleSetCurrencyLocale = (newLocale: CurrencyLocale): void => {
     setCurrencyLocaleState(newLocale);
-  }
+  };
   
   const login = async (email: string, password: string) => {
     // Simulação de login - em produção, isso seria uma chamada de API
@@ -134,7 +134,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     localStorage.removeItem('user');
   };
   
-  // Create the context value with explicit typing
+  // Create a properly typed context value object
   const contextValue: AppContextType = {
     theme,
     setTheme: handleSetTheme,
