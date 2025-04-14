@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { setCurrencyLocale } from '@/utils/currency';
+import { setCurrencyLocale as setAppCurrencyLocale } from '@/utils/currency';
 
 type Theme = 'light' | 'dark';
 type Language = 'pt' | 'en' | 'es';
@@ -27,6 +27,7 @@ interface AppContextType {
   logout: () => void;
 }
 
+// Create context with a default undefined value
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -64,7 +65,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   // Efeito para aplicar a moeda
   useEffect(() => {
     localStorage.setItem('currency-locale', currencyLocale);
-    setCurrencyLocale(currencyLocale);
+    setAppCurrencyLocale(currencyLocale);
   }, [currencyLocale]);
   
   // Efeito para verificar autenticação ao carregar
@@ -130,7 +131,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     localStorage.removeItem('user');
   };
   
-  const value = {
+  const value: AppContextType = {
     theme,
     setTheme,
     language,
