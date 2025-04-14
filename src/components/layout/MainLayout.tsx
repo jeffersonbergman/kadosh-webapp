@@ -1,25 +1,37 @@
 
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Button } from "@/components/ui/button";
 import { 
   Menu, X, Home, DollarSign, Users, Music, 
-  ChevronDown, LogOut, Settings
+  ChevronDown, LogOut, Settings, Globe
 } from 'lucide-react';
+import { useApp } from '@/contexts/AppContext';
+import { toast } from 'sonner';
 
 const MainLayout = ({ children }: { children: React.ReactNode }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+  const { logout, user } = useApp();
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
+  const handleLogout = () => {
+    logout();
+    toast.success(t('auth.logoutSuccess'));
+    navigate('/login');
+  };
+
   const navItems = [
-    { name: 'Dashboard', icon: <Home size={20} />, path: '/' },
-    { name: 'Financeiro', icon: <DollarSign size={20} />, path: '/financeiro' },
-    { name: 'Administrativo', icon: <Users size={20} />, path: '/administrativo' },
-    { name: 'Música', icon: <Music size={20} />, path: '/musica' },
+    { name: t('sidebar.dashboard'), icon: <Home size={20} />, path: '/' },
+    { name: t('sidebar.financial'), icon: <DollarSign size={20} />, path: '/financeiro' },
+    { name: t('sidebar.administrative'), icon: <Users size={20} />, path: '/administrativo' },
+    { name: t('sidebar.music'), icon: <Music size={20} />, path: '/musica' },
   ];
 
   return (
@@ -37,18 +49,23 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
               {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
             </Button>
             <Link to="/" className="flex items-center">
-              <span className="text-xl font-bold text-church-primary">Igreja</span>
+              <span className="text-xl font-bold text-church-primary">{t('app.name').split('Manager')[0]}</span>
               <span className="text-xl font-semibold text-church-secondary">Manager</span>
             </Link>
           </div>
           <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="sm" className="text-gray-600 hidden md:flex">
+            {user && (
+              <span className="text-sm text-gray-600 hidden md:block mr-4">
+                {t('app.welcome')}, {user.name}
+              </span>
+            )}
+            <Button variant="ghost" size="sm" className="text-gray-600 hidden md:flex" onClick={() => navigate('/configuracoes')}>
               <Settings size={18} className="mr-1" />
-              <span>Configurações</span>
+              <span>{t('app.settings')}</span>
             </Button>
-            <Button variant="outline" size="sm" className="text-gray-600">
+            <Button variant="outline" size="sm" className="text-gray-600" onClick={handleLogout}>
               <LogOut size={18} className="mr-1" />
-              <span>Sair</span>
+              <span>{t('app.logout')}</span>
             </Button>
           </div>
         </div>
@@ -78,26 +95,39 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
                   </Link>
                 </li>
               ))}
+              <li>
+                <Link
+                  to="/configuracoes"
+                  className={`flex items-center px-4 py-3 rounded-md transition-colors ${
+                    location.pathname === '/configuracoes'
+                      ? 'bg-church-light text-church-primary font-medium'
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  <Globe size={20} />
+                  <span className="ml-3">{t('settings.title')}</span>
+                </Link>
+              </li>
             </ul>
             
             <div className="border-t border-gray-200 mt-6 pt-4">
               <h3 className="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                Acesso Rápido
+                {t('sidebar.quickAccess')}
               </h3>
               <ul className="mt-3 space-y-1">
                 <li>
                   <Link to="/administrativo/membros" className="flex items-center px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-md">
-                    Cadastro de Membros
+                    {t('sidebar.members')}
                   </Link>
                 </li>
                 <li>
                   <Link to="/financeiro/relatorios" className="flex items-center px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-md">
-                    Relatórios Financeiros
+                    {t('sidebar.reports')}
                   </Link>
                 </li>
                 <li>
                   <Link to="/musica/escalas" className="flex items-center px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-md">
-                    Escalas de Músicos
+                    {t('sidebar.schedules')}
                   </Link>
                 </li>
               </ul>
