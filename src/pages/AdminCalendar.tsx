@@ -1,42 +1,24 @@
 
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { addMonths, subMonths } from "date-fns";
 import MainLayout from '@/components/layout/MainLayout';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  Plus, ChevronLeft, ChevronRight, Calendar as CalendarIcon,
-  X, Clock
-} from "lucide-react";
-import { format, addMonths, subMonths } from "date-fns";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Plus } from "lucide-react";
 import { toast } from "sonner";
-
-interface Event {
-  id: string;
-  title: string;
-  date: Date;
-  time: string;
-  description: string;
-  type: 'service' | 'meeting' | 'special' | 'other';
-}
+import { Event } from '@/types/calendar';
+import CalendarHeader from '@/components/calendar/CalendarHeader';
+import AddEventDialog from '@/components/calendar/AddEventDialog';
+import SelectedDateEvents from '@/components/calendar/SelectedDateEvents';
+import EventTabs from '@/components/calendar/EventTabs';
 
 const AdminCalendar = () => {
   const { t } = useTranslation();
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [newEvent, setNewEvent] = useState({
-    title: '',
-    time: '',
-    description: '',
-    type: 'service' as const
-  });
   
   // Dummy events data - in a real app this would come from an API
   const [events, setEvents] = useState<Event[]>([
@@ -74,40 +56,16 @@ const AdminCalendar = () => {
     setCurrentMonth(addMonths(currentMonth, 1));
   };
 
-  const handleAddEvent = () => {
-    if (!selectedDate || !newEvent.title || !newEvent.time) {
-      toast.error("Por favor, preencha todos os campos obrigatórios");
-      return;
-    }
-
+  const handleAddEvent = (newEventData: Omit<Event, 'id'>) => {
     const newEventObj: Event = {
       id: (events.length + 1).toString(),
-      title: newEvent.title,
-      date: selectedDate,
-      time: newEvent.time,
-      description: newEvent.description,
-      type: newEvent.type
+      ...newEventData
     };
 
     setEvents([...events, newEventObj]);
     setIsDialogOpen(false);
-    setNewEvent({
-      title: '',
-      time: '',
-      description: '',
-      type: 'service'
-    });
-
     toast.success("Evento adicionado com sucesso!");
   };
-
-  // Filter events for the selected date
-  const selectedDateEvents = selectedDate 
-    ? events.filter(event => 
-        event.date.getDate() === selectedDate.getDate() && 
-        event.date.getMonth() === selectedDate.getMonth() && 
-        event.date.getFullYear() === selectedDate.getFullYear())
-    : [];
 
   // Get dates that have events for highlighting on the calendar
   const eventDates = events.map(event => event.date);
@@ -120,121 +78,20 @@ const AdminCalendar = () => {
             <h1 className="text-2xl md:text-3xl font-bold text-gray-800">{t('administrative.calendarTitle')}</h1>
             <p className="text-gray-500">{t('administrative.calendarDescription')}</p>
           </div>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus size={18} className="mr-2" /> {t('administrative.addEvent')}
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Adicionar Novo Evento</DialogTitle>
-                <DialogDescription>
-                  Preencha os detalhes do evento abaixo.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="event-date" className="text-right">
-                    Data
-                  </Label>
-                  <div className="col-span-3">
-                    {selectedDate ? (
-                      <div className="flex items-center gap-2 h-10 px-3 rounded-md border">
-                        <CalendarIcon size={16} className="text-gray-500" />
-                        <span>{format(selectedDate, 'dd/MM/yyyy')}</span>
-                      </div>
-                    ) : (
-                      <p className="text-sm text-gray-500">Selecione uma data no calendário</p>
-                    )}
-                  </div>
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="event-title" className="text-right">
-                    Título
-                  </Label>
-                  <Input
-                    id="event-title"
-                    value={newEvent.title}
-                    onChange={(e) => setNewEvent({...newEvent, title: e.target.value})}
-                    className="col-span-3"
-                    placeholder="Ex: Culto de Adoração"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="event-time" className="text-right">
-                    Horário
-                  </Label>
-                  <div className="col-span-3 flex items-center gap-2">
-                    <Clock size={16} className="text-gray-500" />
-                    <Input
-                      id="event-time"
-                      value={newEvent.time}
-                      onChange={(e) => setNewEvent({...newEvent, time: e.target.value})}
-                      placeholder="Ex: 19:00"
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="event-type" className="text-right">
-                    Tipo
-                  </Label>
-                  <Select 
-                    value={newEvent.type} 
-                    onValueChange={(value: 'service' | 'meeting' | 'special' | 'other') => setNewEvent({...newEvent, type: value})}
-                  >
-                    <SelectTrigger className="col-span-3">
-                      <SelectValue placeholder="Selecione o tipo de evento" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="service">Culto</SelectItem>
-                      <SelectItem value="meeting">Reunião</SelectItem>
-                      <SelectItem value="special">Especial</SelectItem>
-                      <SelectItem value="other">Outro</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid grid-cols-4 items-start gap-4">
-                  <Label htmlFor="event-description" className="text-right pt-2">
-                    Descrição
-                  </Label>
-                  <textarea
-                    id="event-description"
-                    value={newEvent.description}
-                    onChange={(e) => setNewEvent({...newEvent, description: e.target.value})}
-                    className="col-span-3 min-h-[80px] rounded-md border border-input bg-background px-3 py-2 text-sm"
-                    placeholder="Descrição do evento..."
-                  />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                  Cancelar
-                </Button>
-                <Button onClick={handleAddEvent}>Adicionar Evento</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          <Button onClick={() => setIsDialogOpen(true)}>
+            <Plus size={18} className="mr-2" /> {t('administrative.addEvent')}
+          </Button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Calendar section */}
           <Card className="lg:col-span-2">
             <CardHeader>
-              <div className="flex justify-between items-center">
-                <CardTitle>{t('administrative.churchCalendar')}</CardTitle>
-                <div className="flex space-x-2">
-                  <Button variant="outline" size="icon" onClick={handlePreviousMonth}>
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
-                  <div className="flex items-center px-2 font-medium">
-                    {format(currentMonth, 'MMMM yyyy')}
-                  </div>
-                  <Button variant="outline" size="icon" onClick={handleNextMonth}>
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
+              <CalendarHeader 
+                currentMonth={currentMonth}
+                onPreviousMonth={handlePreviousMonth}
+                onNextMonth={handleNextMonth}
+              />
             </CardHeader>
             <CardContent>
               <Calendar
@@ -262,122 +119,22 @@ const AdminCalendar = () => {
             </CardContent>
           </Card>
 
-          {/* Events section */}
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                {selectedDate ? (
-                  <span>{format(selectedDate, 'dd/MM/yyyy')}</span>
-                ) : (
-                  t('administrative.selectDate')
-                )}
-              </CardTitle>
-              <CardDescription>
-                {selectedDateEvents.length > 0 
-                  ? t('administrative.eventsCount', { count: selectedDateEvents.length }) 
-                  : t('administrative.noEvents')}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {selectedDateEvents.length > 0 ? (
-                <div className="space-y-4">
-                  {selectedDateEvents.map((event) => (
-                    <div key={event.id} className="p-3 border rounded-md hover:bg-gray-50">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <h3 className="font-medium text-base">{event.title}</h3>
-                          <p className="text-sm text-gray-500 mt-1">{event.time} - {event.description}</p>
-                        </div>
-                        <div className={`px-2 py-1 text-xs font-medium rounded-full ${
-                          event.type === 'service' ? 'bg-blue-100 text-blue-800' :
-                          event.type === 'meeting' ? 'bg-amber-100 text-amber-800' :
-                          event.type === 'special' ? 'bg-purple-100 text-purple-800' :
-                          'bg-gray-100 text-gray-800'
-                        }`}>
-                          {t(`administrative.eventType.${event.type}`)}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center py-6 text-center">
-                  <CalendarIcon className="h-12 w-12 text-gray-300 mb-2" />
-                  <h3 className="text-lg font-medium text-gray-900">{t('administrative.noEventsTitle')}</h3>
-                  <p className="text-sm text-gray-500 mt-1">
-                    {selectedDate ? t('administrative.noEventsForDate') : t('administrative.selectDateToSeeEvents')}
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          {/* Events for selected date */}
+          <SelectedDateEvents selectedDate={selectedDate} events={events} />
         </div>
 
+        {/* Event tabs section */}
         <div className="mt-6">
-          <Tabs defaultValue="upcoming">
-            <TabsList>
-              <TabsTrigger value="upcoming">{t('administrative.upcomingEvents')}</TabsTrigger>
-              <TabsTrigger value="past">{t('administrative.pastEvents')}</TabsTrigger>
-              <TabsTrigger value="recurring">{t('administrative.recurringEvents')}</TabsTrigger>
-            </TabsList>
-            <TabsContent value="upcoming" className="mt-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t('administrative.upcomingEvents')}</CardTitle>
-                  <CardDescription>{t('administrative.upcomingEventsDescription')}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {events
-                      .filter(event => event.date >= new Date())
-                      .sort((a, b) => a.date.getTime() - b.date.getTime())
-                      .map((event) => (
-                        <div key={event.id} className="p-3 border rounded-md hover:bg-gray-50">
-                          <div className="flex items-start justify-between">
-                            <div>
-                              <h3 className="font-medium text-base">{event.title}</h3>
-                              <p className="text-sm text-gray-500 mt-1">
-                                {format(event.date, 'dd/MM/yyyy')} - {event.time}
-                              </p>
-                              <p className="text-sm text-gray-600 mt-1">{event.description}</p>
-                            </div>
-                            <div className={`px-2 py-1 text-xs font-medium rounded-full ${
-                              event.type === 'service' ? 'bg-blue-100 text-blue-800' :
-                              event.type === 'meeting' ? 'bg-amber-100 text-amber-800' :
-                              event.type === 'special' ? 'bg-purple-100 text-purple-800' :
-                              'bg-gray-100 text-gray-800'
-                            }`}>
-                              {t(`administrative.eventType.${event.type}`)}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-            <TabsContent value="past" className="mt-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t('administrative.pastEvents')}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-500">{t('administrative.pastEventsPlaceholder')}</p>
-                </CardContent>
-              </Card>
-            </TabsContent>
-            <TabsContent value="recurring" className="mt-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t('administrative.recurringEvents')}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-500">{t('administrative.recurringEventsPlaceholder')}</p>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+          <EventTabs events={events} />
         </div>
+
+        {/* Add event dialog */}
+        <AddEventDialog 
+          isOpen={isDialogOpen}
+          onOpenChange={setIsDialogOpen}
+          selectedDate={selectedDate}
+          onAddEvent={handleAddEvent}
+        />
       </div>
     </MainLayout>
   );
