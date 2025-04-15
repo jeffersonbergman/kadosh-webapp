@@ -4,14 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import MainLayout from '@/components/layout/MainLayout';
 import DashboardCard from '@/components/dashboard/DashboardCard';
 import StatCard from '@/components/dashboard/StatCard';
-import { DollarSign, Users, Music, Calendar, Clock, ChevronUp } from 'lucide-react';
+import { DollarSign, Users, Music, Calendar, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const Index = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   
-  // Dados de exemplo (substituir por dados reais)
+  // Sample data (to be replaced with real data)
   const stats = [
     { 
       title: t('dashboard.balance'), 

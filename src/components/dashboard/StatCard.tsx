@@ -16,7 +16,7 @@ interface StatCardProps {
   onClick?: () => void;
 }
 
-const StatCard = ({ 
+const StatCard: React.FC<StatCardProps> = ({ 
   title, 
   value, 
   description, 
@@ -24,7 +24,7 @@ const StatCard = ({
   trend,
   className,
   onClick
-}: StatCardProps) => {
+}) => {
   return (
     <div 
       className={cn(
