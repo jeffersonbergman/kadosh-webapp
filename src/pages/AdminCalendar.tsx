@@ -6,8 +6,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, ChevronLeft, ChevronRight, Calendar as CalendarIcon } from "lucide-react";
+import { 
+  Plus, ChevronLeft, ChevronRight, Calendar as CalendarIcon,
+  X, Clock
+} from "lucide-react";
 import { format, addMonths, subMonths } from "date-fns";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "sonner";
 
 interface Event {
   id: string;
@@ -22,6 +30,13 @@ const AdminCalendar = () => {
   const { t } = useTranslation();
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [newEvent, setNewEvent] = useState({
+    title: '',
+    time: '',
+    description: '',
+    type: 'service' as const
+  });
   
   // Dummy events data - in a real app this would come from an API
   const [events, setEvents] = useState<Event[]>([
@@ -59,6 +74,33 @@ const AdminCalendar = () => {
     setCurrentMonth(addMonths(currentMonth, 1));
   };
 
+  const handleAddEvent = () => {
+    if (!selectedDate || !newEvent.title || !newEvent.time) {
+      toast.error("Por favor, preencha todos os campos obrigatórios");
+      return;
+    }
+
+    const newEventObj: Event = {
+      id: (events.length + 1).toString(),
+      title: newEvent.title,
+      date: selectedDate,
+      time: newEvent.time,
+      description: newEvent.description,
+      type: newEvent.type
+    };
+
+    setEvents([...events, newEventObj]);
+    setIsDialogOpen(false);
+    setNewEvent({
+      title: '',
+      time: '',
+      description: '',
+      type: 'service'
+    });
+
+    toast.success("Evento adicionado com sucesso!");
+  };
+
   // Filter events for the selected date
   const selectedDateEvents = selectedDate 
     ? events.filter(event => 
@@ -78,9 +120,101 @@ const AdminCalendar = () => {
             <h1 className="text-2xl md:text-3xl font-bold text-gray-800">{t('administrative.calendarTitle')}</h1>
             <p className="text-gray-500">{t('administrative.calendarDescription')}</p>
           </div>
-          <Button>
-            <Plus size={18} className="mr-2" /> {t('administrative.addEvent')}
-          </Button>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus size={18} className="mr-2" /> {t('administrative.addEvent')}
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Adicionar Novo Evento</DialogTitle>
+                <DialogDescription>
+                  Preencha os detalhes do evento abaixo.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="event-date" className="text-right">
+                    Data
+                  </Label>
+                  <div className="col-span-3">
+                    {selectedDate ? (
+                      <div className="flex items-center gap-2 h-10 px-3 rounded-md border">
+                        <CalendarIcon size={16} className="text-gray-500" />
+                        <span>{format(selectedDate, 'dd/MM/yyyy')}</span>
+                      </div>
+                    ) : (
+                      <p className="text-sm text-gray-500">Selecione uma data no calendário</p>
+                    )}
+                  </div>
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="event-title" className="text-right">
+                    Título
+                  </Label>
+                  <Input
+                    id="event-title"
+                    value={newEvent.title}
+                    onChange={(e) => setNewEvent({...newEvent, title: e.target.value})}
+                    className="col-span-3"
+                    placeholder="Ex: Culto de Adoração"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="event-time" className="text-right">
+                    Horário
+                  </Label>
+                  <div className="col-span-3 flex items-center gap-2">
+                    <Clock size={16} className="text-gray-500" />
+                    <Input
+                      id="event-time"
+                      value={newEvent.time}
+                      onChange={(e) => setNewEvent({...newEvent, time: e.target.value})}
+                      placeholder="Ex: 19:00"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="event-type" className="text-right">
+                    Tipo
+                  </Label>
+                  <Select 
+                    value={newEvent.type} 
+                    onValueChange={(value: 'service' | 'meeting' | 'special' | 'other') => setNewEvent({...newEvent, type: value})}
+                  >
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue placeholder="Selecione o tipo de evento" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="service">Culto</SelectItem>
+                      <SelectItem value="meeting">Reunião</SelectItem>
+                      <SelectItem value="special">Especial</SelectItem>
+                      <SelectItem value="other">Outro</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-4 items-start gap-4">
+                  <Label htmlFor="event-description" className="text-right pt-2">
+                    Descrição
+                  </Label>
+                  <textarea
+                    id="event-description"
+                    value={newEvent.description}
+                    onChange={(e) => setNewEvent({...newEvent, description: e.target.value})}
+                    className="col-span-3 min-h-[80px] rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    placeholder="Descrição do evento..."
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                  Cancelar
+                </Button>
+                <Button onClick={handleAddEvent}>Adicionar Evento</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

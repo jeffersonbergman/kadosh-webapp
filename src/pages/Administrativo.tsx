@@ -1,7 +1,7 @@
 
 import React from 'react';
 import MainLayout from '@/components/layout/MainLayout';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 
 const Administrativo = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   
   return (
     <MainLayout>
@@ -24,14 +25,14 @@ const Administrativo = () => {
             <p className="text-gray-500">{t('administrative.subtitle')}</p>
           </div>
           <div className="flex space-x-2">
-            <Button>
+            <Button onClick={() => navigate('/administrativo/membros/novo')}>
               <UserPlus size={18} className="mr-2" /> {t('administrative.newMember')}
             </Button>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-          <Link to="/administrativo/membros" className="dashboard-card flex items-start group">
+          <div className="dashboard-card flex items-start group cursor-pointer" onClick={() => navigate('/administrativo/membros/1')}>
             <div className="mr-4 bg-church-light p-3 rounded-lg text-church-primary">
               <Users size={24} />
             </div>
@@ -39,7 +40,7 @@ const Administrativo = () => {
               <h3 className="font-semibold text-lg">{t('administrative.members')}</h3>
               <p className="text-gray-500 mt-1 text-sm">{t('administrative.membersDescription')}</p>
             </div>
-          </Link>
+          </div>
           
           <Link to="/administrativo/calendario" className="dashboard-card flex items-start group">
             <div className="mr-4 bg-church-light p-3 rounded-lg text-church-primary">
@@ -125,7 +126,7 @@ const Administrativo = () => {
                           </td>
                           <td className="p-4 align-middle text-muted-foreground">15/01/2023</td>
                           <td className="p-4 align-middle">
-                            <Button variant="ghost" size="sm">Detalhes</Button>
+                            <Button variant="ghost" size="sm" onClick={() => navigate('/administrativo/membros/1')}>Detalhes</Button>
                           </td>
                         </tr>
                         <tr className="border-b transition-colors hover:bg-muted/50">
@@ -147,7 +148,7 @@ const Administrativo = () => {
                           </td>
                           <td className="p-4 align-middle text-muted-foreground">03/03/2023</td>
                           <td className="p-4 align-middle">
-                            <Button variant="ghost" size="sm">Detalhes</Button>
+                            <Button variant="ghost" size="sm" onClick={() => navigate('/administrativo/membros/2')}>Detalhes</Button>
                           </td>
                         </tr>
                         <tr className="border-b transition-colors hover:bg-muted/50">
@@ -169,7 +170,7 @@ const Administrativo = () => {
                           </td>
                           <td className="p-4 align-middle text-muted-foreground">10/04/2025</td>
                           <td className="p-4 align-middle">
-                            <Button variant="ghost" size="sm">Detalhes</Button>
+                            <Button variant="ghost" size="sm" onClick={() => navigate('/administrativo/membros/3')}>Detalhes</Button>
                           </td>
                         </tr>
                         <tr className="border-b transition-colors hover:bg-muted/50">
@@ -191,7 +192,7 @@ const Administrativo = () => {
                           </td>
                           <td className="p-4 align-middle text-muted-foreground">05/07/2022</td>
                           <td className="p-4 align-middle">
-                            <Button variant="ghost" size="sm">Detalhes</Button>
+                            <Button variant="ghost" size="sm" onClick={() => navigate('/administrativo/membros/4')}>Detalhes</Button>
                           </td>
                         </tr>
                         <tr className="transition-colors hover:bg-muted/50">
@@ -213,7 +214,7 @@ const Administrativo = () => {
                           </td>
                           <td className="p-4 align-middle text-muted-foreground">20/09/2023</td>
                           <td className="p-4 align-middle">
-                            <Button variant="ghost" size="sm">Detalhes</Button>
+                            <Button variant="ghost" size="sm" onClick={() => navigate('/administrativo/membros/5')}>Detalhes</Button>
                           </td>
                         </tr>
                       </tbody>
@@ -349,7 +350,7 @@ const Administrativo = () => {
                     <CardDescription>Envie e gerencie comunicados para os membros</CardDescription>
                   </div>
                   <div className="flex space-x-2">
-                    <Button>
+                    <Button onClick={() => navigate('/administrativo/comunicados')}>
                       <Send size={18} className="mr-2" /> Novo Comunicado
                     </Button>
                   </div>
@@ -357,7 +358,8 @@ const Administrativo = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="p-4 border rounded-md hover:bg-gray-50">
+                  {/* Comunicados items */}
+                  <div className="p-4 border rounded-md hover:bg-gray-50 cursor-pointer" onClick={() => navigate('/administrativo/comunicados')}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
                         <Mail size={20} className="mr-3 text-church-primary" />
@@ -369,7 +371,10 @@ const Administrativo = () => {
                         </div>
                       </div>
                       <div>
-                        <Button variant="outline" size="sm">Detalhes</Button>
+                        <Button variant="outline" size="sm" onClick={(e) => {
+                          e.stopPropagation();
+                          navigate('/administrativo/comunicados');
+                        }}>Detalhes</Button>
                       </div>
                     </div>
                     <div className="mt-3 text-sm text-gray-600">

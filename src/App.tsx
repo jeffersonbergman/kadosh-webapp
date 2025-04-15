@@ -13,6 +13,9 @@ import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Settings from "./pages/Settings";
 import AdminCalendar from "./pages/AdminCalendar";
+import MemberDetails from "./pages/MemberDetails";
+import NewMember from "./pages/NewMember";
+import Communications from "./pages/Communications";
 import './i18n';
 
 const queryClient = new QueryClient();
@@ -62,6 +65,30 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <AdminCalendar />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/administrativo/membros/novo" 
+          element={
+            <ProtectedRoute>
+              <NewMember />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/administrativo/membros/:id" 
+          element={
+            <ProtectedRoute>
+              <MemberDetails />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/administrativo/comunicados" 
+          element={
+            <ProtectedRoute>
+              <Communications />
             </ProtectedRoute>
           } 
         />
