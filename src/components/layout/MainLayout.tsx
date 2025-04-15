@@ -1,5 +1,6 @@
+
 import React from 'react';
-import Sidebar from '@/components/ui/sidebar';
+import { Sidebar } from '@/components/ui/sidebar';
 import { useApp } from '@/contexts/AppContext';
 
 interface MainLayoutProps {

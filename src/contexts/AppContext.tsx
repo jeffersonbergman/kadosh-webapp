@@ -10,6 +10,7 @@ export interface AppContextProps {
   setTheme: (theme: string) => void;
   language: string;
   setLanguage: (language: string) => void;
+  login?: (username: string, password: string) => Promise<boolean>;
 }
 
 export const AppContext = createContext<AppContextProps>({
@@ -18,7 +19,8 @@ export const AppContext = createContext<AppContextProps>({
   theme: 'light',
   setTheme: () => {},
   language: 'pt',
-  setLanguage: () => {}
+  setLanguage: () => {},
+  login: async () => false
 });
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -32,6 +34,15 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setLanguage(newLanguage);
   };
 
+  const login = async (username: string, password: string): Promise<boolean> => {
+    // Mock login functionality
+    if (username && password) {
+      setIsAuthenticated(true);
+      return true;
+    }
+    return false;
+  };
+
   return (
     <AppContext.Provider value={{
       isAuthenticated,
@@ -39,7 +50,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       theme: theme || 'light',
       setTheme,
       language,
-      setLanguage: updateLanguage
+      setLanguage: updateLanguage,
+      login
     }}>
       {children}
     </AppContext.Provider>

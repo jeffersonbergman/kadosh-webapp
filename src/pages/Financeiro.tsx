@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,7 +20,7 @@ import {
   exportToCSV, exportToExcel, exportToPDF, 
   calculateFinancialSummary, prepareMonthlyChartData, prepareCategoryChartData, 
   formatCurrency, formatDate 
-} from '@/utils/financeUtils';
+} from '@/utils/finance';
 
 // Sample data - in a real app this would come from an API or database
 const sampleTransactions = [
