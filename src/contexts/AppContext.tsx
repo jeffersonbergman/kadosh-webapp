@@ -1,13 +1,17 @@
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useTranslation } from 'react-i18next';
-import { setCurrencyLocale as setAppCurrencyLocale } from '@/utils/currency';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
-// Define our types separately
-type Theme = 'light' | 'dark';
-type Language = 'pt' | 'en' | 'es';
-type CurrencyLocale = 'pt-BR' | 'en-US' | 'en-GB' | 'es-ES' | 'de-DE' | 'fr-FR';
+// Define the shape of the context
+interface AppContextProps {
+  isAuthenticated: boolean;
+  login: (email: string, password: string) => Promise<boolean>;
+  logout: () => void;
+  user: User | null;
+  theme: 'light' | 'dark';
+  toggleTheme: () => void;
+}
 
+// User type
 interface User {
   id: string;
   name: string;
@@ -15,177 +19,87 @@ interface User {
   role: string;
 }
 
-// Admin credentials
-const ADMIN_EMAIL = 'admin@igreja.com';
-const ADMIN_PASSWORD = 'admin123';
+// Mock user data - in a real app, this would come from an API
+const MOCK_USER = {
+  id: '1',
+  name: 'Admin',
+  email: 'admin@igreja.com',
+  role: 'admin'
+};
 
-// Define the context interface
-interface AppContextValue {
-  theme: Theme;
-  setTheme: (theme: Theme) => void;
-  language: Language;
-  setLanguage: (lang: Language) => void;
-  currencyLocale: CurrencyLocale;
-  setCurrencyLocale: (locale: CurrencyLocale) => void;
-  isAuthenticated: boolean;
-  user: User | null;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
-}
+// Create context with default values
+const AppContext = createContext<AppContextProps>({
+  isAuthenticated: false,
+  login: async () => false,
+  logout: () => {},
+  user: null,
+  theme: 'light',
+  toggleTheme: () => {}
+});
 
-// Create the context with a default value
-const AppContext = createContext<AppContextValue | undefined>(undefined);
-
-export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const { i18n } = useTranslation();
-  const [theme, setThemeState] = useState<Theme>(() => {
-    const savedTheme = localStorage.getItem('theme');
-    return (savedTheme === 'dark' || savedTheme === 'light') ? savedTheme : 'light';
-  });
-  
-  const [language, setLanguageState] = useState<Language>(() => {
-    const savedLang = localStorage.getItem('language');
-    return (savedLang === 'pt' || savedLang === 'en' || savedLang === 'es') ? savedLang as Language : 'pt';
-  });
-  
-  const [currencyLocale, setCurrencyLocaleState] = useState<CurrencyLocale>(() => {
-    const savedLocale = localStorage.getItem('currency-locale');
-    return (savedLocale as CurrencyLocale) || 'pt-BR';
-  });
-  
+export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
   
-  // Apply theme effect
+  // Check if user is already logged in (from localStorage in this example)
   useEffect(() => {
-    localStorage.setItem('theme', theme);
-    document.documentElement.classList.toggle('dark', theme === 'dark');
-  }, [theme]);
-  
-  // Apply language effect
-  useEffect(() => {
-    localStorage.setItem('language', language);
-    i18n.changeLanguage(language);
-  }, [language, i18n]);
-  
-  // Apply currency effect - now based on language/region
-  useEffect(() => {
-    // Map language to appropriate currency locale
-    let newCurrencyLocale: CurrencyLocale;
-    switch (language) {
-      case 'en':
-        newCurrencyLocale = 'en-US';
-        break;
-      case 'es':
-        newCurrencyLocale = 'es-ES';
-        break;
-      case 'pt':
-      default:
-        newCurrencyLocale = 'pt-BR';
-        break;
+    const storedAuth = localStorage.getItem('isAuthenticated');
+    
+    if (storedAuth === 'true') {
+      setIsAuthenticated(true);
+      
+      // In a real app, you would validate the token and fetch user data
+      setUser(MOCK_USER);
     }
     
-    setCurrencyLocaleState(newCurrencyLocale);
-    localStorage.setItem('currency-locale', newCurrencyLocale);
-    setAppCurrencyLocale(newCurrencyLocale);
-  }, [language]);
-  
-  // Check authentication on load
-  useEffect(() => {
-    const checkAuth = () => {
-      const storedUser = localStorage.getItem('user');
-      if (storedUser) {
-        try {
-          const parsedUser = JSON.parse(storedUser);
-          setUser(parsedUser);
-          setIsAuthenticated(true);
-        } catch (error) {
-          console.error('Error parsing stored user:', error);
-          localStorage.removeItem('user');
-        }
-      }
-    };
-    
-    checkAuth();
+    // Check for saved theme preference
+    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark';
+    if (savedTheme) {
+      setTheme(savedTheme);
+      document.documentElement.classList.toggle('dark', savedTheme === 'dark');
+    }
   }, []);
   
-  // Define handler functions
-  const setTheme = (newTheme: Theme): void => {
-    setThemeState(newTheme);
+  // Mock login function - in a real app, this would make an API call
+  const login = async (email: string, password: string): Promise<boolean> => {
+    // For demo purposes only - simple validation
+    if (email === 'admin@igreja.com' && password === 'admin') {
+      setIsAuthenticated(true);
+      setUser(MOCK_USER);
+      localStorage.setItem('isAuthenticated', 'true');
+      return true;
+    }
+    return false;
   };
   
-  const setLanguage = (newLang: Language): void => {
-    setLanguageState(newLang);
-  };
-  
-  const setCurrencyLocale = (newLocale: CurrencyLocale): void => {
-    setCurrencyLocaleState(newLocale);
-  };
-  
-  const login = async (email: string, password: string): Promise<void> => {
-    return new Promise<void>((resolve, reject) => {
-      setTimeout(() => {
-        // Check if admin credentials
-        if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-          const adminUser = {
-            id: 'admin-1',
-            name: 'Administrador',
-            email: ADMIN_EMAIL,
-            role: 'admin'
-          };
-          
-          setUser(adminUser);
-          setIsAuthenticated(true);
-          localStorage.setItem('user', JSON.stringify(adminUser));
-          resolve();
-        } 
-        // Check for other simulated users
-        else if (email && password) {
-          const mockUser = {
-            id: '1',
-            name: 'Usuário da Igreja',
-            email,
-            role: 'user'
-          };
-          
-          setUser(mockUser);
-          setIsAuthenticated(true);
-          localStorage.setItem('user', JSON.stringify(mockUser));
-          resolve();
-        } else {
-          reject(new Error('Credenciais inválidas'));
-        }
-      }, 500);
-    });
-  };
-  
-  const logout = (): void => {
-    setUser(null);
+  // Logout function
+  const logout = () => {
     setIsAuthenticated(false);
-    localStorage.removeItem('user');
+    setUser(null);
+    localStorage.removeItem('isAuthenticated');
   };
   
-  // Create context value
-  const contextValue: AppContextValue = {
-    theme,
-    setTheme,
-    language,
-    setLanguage,
-    currencyLocale,
-    setCurrencyLocale,
-    isAuthenticated,
-    user,
-    login,
-    logout
+  // Toggle theme function
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+    document.documentElement.classList.toggle('dark', newTheme === 'dark');
   };
   
-  return <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>;
+  return (
+    <AppContext.Provider value={{ 
+      isAuthenticated, 
+      login, 
+      logout,
+      user,
+      theme,
+      toggleTheme
+    }}>
+      {children}
+    </AppContext.Provider>
+  );
 };
 
-export const useApp = (): AppContextValue => {
-  const context = useContext(AppContext);
-  if (context === undefined) {
-    throw new Error('useApp must be used within an AppProvider');
-  }
-  return context;
-};
+export const useApp = () => useContext(AppContext);

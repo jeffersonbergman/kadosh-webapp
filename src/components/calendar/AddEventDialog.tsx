@@ -1,151 +1,174 @@
 
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { format } from "date-fns";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { CalendarIcon, Clock } from "lucide-react";
-import { Event } from '@/types/calendar';
-import { toast } from "sonner";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { useToast } from "@/hooks/use-toast";
+import { EventType } from "@/types/calendar";
 
 interface AddEventDialogProps {
   isOpen: boolean;
-  onOpenChange: (open: boolean) => void;
-  selectedDate?: Date;
-  onAddEvent: (event: Omit<Event, 'id'>) => void;
+  onClose: () => void;
+  onAddEvent: (event: any) => void;
 }
 
-const AddEventDialog: React.FC<AddEventDialogProps> = ({
-  isOpen,
-  onOpenChange,
-  selectedDate,
-  onAddEvent
+const AddEventDialog: React.FC<AddEventDialogProps> = ({ 
+  isOpen, 
+  onClose, 
+  onAddEvent 
 }) => {
-  const { t } = useTranslation();
-  const [newEvent, setNewEvent] = useState({
-    title: '',
-    time: '',
-    description: '',
-    type: 'service' as const
-  });
-
-  const handleAddEvent = () => {
-    if (!selectedDate || !newEvent.title || !newEvent.time) {
-      toast.error("Por favor, preencha todos os campos obrigatórios");
+  const { toast } = useToast();
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [time, setTime] = useState('');
+  const [eventType, setEventType] = useState<EventType>('service');
+  
+  const handleSubmit = () => {
+    if (!title || !date || !time) {
+      toast({
+        title: "Campos incompletos",
+        description: "Por favor, preencha todos os campos obrigatórios.",
+        variant: "destructive",
+      });
       return;
     }
 
-    onAddEvent({
-      title: newEvent.title,
-      date: selectedDate,
-      time: newEvent.time,
-      description: newEvent.description,
-      type: newEvent.type
-    });
+    // Create date time object
+    const [hours, minutes] = time.split(':');
+    const eventDate = new Date(date as Date);
+    eventDate.setHours(parseInt(hours, 10), parseInt(minutes, 10));
 
+    const newEvent = {
+      id: Math.random().toString(36).substring(2, 9),
+      title,
+      description,
+      date: eventDate.toISOString(),
+      type: eventType
+    };
+
+    onAddEvent(newEvent);
+    
     // Reset form
-    setNewEvent({
-      title: '',
-      time: '',
-      description: '',
-      type: 'service'
+    setTitle('');
+    setDescription('');
+    setDate(new Date());
+    setTime('');
+    setEventType('service');
+    
+    // Close dialog
+    onClose();
+    
+    toast({
+      title: "Evento adicionado",
+      description: "O evento foi adicionado com sucesso ao calendário.",
     });
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+    <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Adicionar Novo Evento</DialogTitle>
-          <DialogDescription>
-            Preencha os detalhes do evento abaixo.
-          </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="event-date" className="text-right">
-              Data
-            </Label>
-            <div className="col-span-3">
-              {selectedDate ? (
-                <div className="flex items-center gap-2 h-10 px-3 rounded-md border">
-                  <CalendarIcon size={16} className="text-gray-500" />
-                  <span>{format(selectedDate, 'dd/MM/yyyy')}</span>
-                </div>
-              ) : (
-                <p className="text-sm text-gray-500">Selecione uma data no calendário</p>
-              )}
-            </div>
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="event-title" className="text-right">
+            <Label htmlFor="title" className="text-right">
               Título
             </Label>
             <Input
-              id="event-title"
-              value={newEvent.title}
-              onChange={(e) => setNewEvent({...newEvent, title: e.target.value})}
+              id="title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
               className="col-span-3"
-              placeholder="Ex: Culto de Adoração"
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="event-time" className="text-right">
-              Horário
-            </Label>
-            <div className="col-span-3 flex items-center gap-2">
-              <Clock size={16} className="text-gray-500" />
-              <Input
-                id="event-time"
-                value={newEvent.time}
-                onChange={(e) => setNewEvent({...newEvent, time: e.target.value})}
-                placeholder="Ex: 19:00"
-              />
-            </div>
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="event-type" className="text-right">
-              Tipo
-            </Label>
-            <Select 
-              value={newEvent.type} 
-              onValueChange={(value: 'service' | 'meeting' | 'special' | 'other') => 
-                setNewEvent({...newEvent, type: value})
-              }
-            >
-              <SelectTrigger className="col-span-3">
-                <SelectValue placeholder="Selecione o tipo de evento" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="service">Culto</SelectItem>
-                <SelectItem value="meeting">Reunião</SelectItem>
-                <SelectItem value="special">Especial</SelectItem>
-                <SelectItem value="other">Outro</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid grid-cols-4 items-start gap-4">
-            <Label htmlFor="event-description" className="text-right pt-2">
+            <Label htmlFor="description" className="text-right">
               Descrição
             </Label>
             <Textarea
-              id="event-description"
-              value={newEvent.description}
-              onChange={(e) => setNewEvent({...newEvent, description: e.target.value})}
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
               className="col-span-3"
-              placeholder="Descrição do evento..."
             />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label className="text-right">Data</Label>
+            <div className="col-span-3">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={"outline"}
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !date && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {date ? format(date, "PPP") : <span>Selecione uma data</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={setDate}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="time" className="text-right">
+              Horário
+            </Label>
+            <Input
+              id="time"
+              type="time"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+              className="col-span-3"
+            />
+          </div>
+          <div className="grid grid-cols-4 items-start gap-4">
+            <Label className="text-right pt-2">Tipo</Label>
+            <RadioGroup 
+              value={eventType} 
+              onValueChange={(value: EventType) => setEventType(value)}
+              className="col-span-3"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="service" id="service" />
+                <Label htmlFor="service">Culto</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="meeting" id="meeting" />
+                <Label htmlFor="meeting">Reunião</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="special" id="special" />
+                <Label htmlFor="special">Evento Especial</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="other" id="other" />
+                <Label htmlFor="other">Outro</Label>
+              </div>
+            </RadioGroup>
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancelar
-          </Button>
-          <Button onClick={handleAddEvent}>Adicionar Evento</Button>
+          <Button type="submit" onClick={handleSubmit}>Adicionar Evento</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

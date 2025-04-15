@@ -1,4 +1,3 @@
-
 export interface Event {
   id: string;
   title: string;
@@ -7,3 +6,5 @@ export interface Event {
   description: string;
   type: 'service' | 'meeting' | 'special' | 'other';
 }
+
+export type EventType = 'service' | 'meeting' | 'special' | 'other';
