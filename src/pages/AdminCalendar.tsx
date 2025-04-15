@@ -1,141 +1,232 @@
-
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { addMonths, subMonths } from "date-fns";
-import MainLayout from '@/components/layout/MainLayout';
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { Plus } from "lucide-react";
-import { toast } from "sonner";
 import { Event } from '@/types/calendar';
 import CalendarHeader from '@/components/calendar/CalendarHeader';
 import AddEventDialog from '@/components/calendar/AddEventDialog';
-import SelectedDateEvents from '@/components/calendar/SelectedDateEvents';
-import EventTabs from '@/components/calendar/EventTabs';
+import MainLayout from '@/components/layout/MainLayout';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
+import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, isSameDay } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Calendar, Clock, Info } from 'lucide-react';
 
-const AdminCalendar = () => {
-  const { t } = useTranslation();
-  const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  
-  // Dummy events data - in a real app this would come from an API
+const AdminCalendar: React.FC = () => {
+  const { toast } = useToast();
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [isAddEventDialogOpen, setIsAddEventDialogOpen] = useState(false);
   const [events, setEvents] = useState<Event[]>([
     {
       id: '1',
       title: 'Culto de Domingo',
-      date: new Date(2025, 3, 20, 19, 0),
-      time: '19:00',
-      description: 'Culto semanal de domingo',
+      date: new Date(2025, 3, 20),
+      time: '10:00',
+      description: 'Culto dominical com Santa Ceia',
       type: 'service'
     },
     {
       id: '2',
-      title: 'Reunião de Líderes',
-      date: new Date(2025, 3, 22, 20, 0),
-      time: '20:00',
-      description: 'Reunião mensal de líderes',
+      title: 'Reunião de Liderança',
+      date: new Date(2025, 3, 15),
+      time: '19:30',
+      description: 'Planejamento trimestral',
       type: 'meeting'
     },
     {
       id: '3',
-      title: 'Culto de Louvor',
-      date: new Date(2025, 3, 25, 19, 30),
-      time: '19:30',
-      description: 'Culto especial de louvor',
+      title: 'Evento Especial de Páscoa',
+      date: new Date(2025, 3, 12),
+      time: '18:00',
+      description: 'Celebração especial de Páscoa',
       type: 'special'
     }
   ]);
 
-  const handlePreviousMonth = () => {
-    setCurrentMonth(subMonths(currentMonth, 1));
-  };
-
-  const handleNextMonth = () => {
+  const nextMonth = () => {
     setCurrentMonth(addMonths(currentMonth, 1));
   };
 
-  const handleAddEvent = (newEventData: Omit<Event, 'id'>) => {
-    const newEventObj: Event = {
-      id: (events.length + 1).toString(),
-      ...newEventData
-    };
-
-    setEvents([...events, newEventObj]);
-    setIsDialogOpen(false);
-    toast.success("Evento adicionado com sucesso!");
+  const prevMonth = () => {
+    setCurrentMonth(subMonths(currentMonth, 1));
   };
 
-  // Get dates that have events for highlighting on the calendar
-  const eventDates = events.map(event => event.date);
-  
+  const handleAddEvent = (event: Event) => {
+    setEvents([...events, event]);
+    toast({
+      title: "Evento adicionado",
+      description: `O evento "${event.title}" foi adicionado com sucesso.`
+    });
+  };
+
+  const handleDateClick = (day: Date) => {
+    setSelectedDate(day);
+    setIsAddEventDialogOpen(true);
+  };
+
+  // Generate calendar days
+  const monthStart = startOfMonth(currentMonth);
+  const monthEnd = endOfMonth(currentMonth);
+  const calendarDays = eachDayOfInterval({ start: monthStart, end: monthEnd });
+
+  // Get events for a specific day
+  const getEventsForDay = (day: Date) => {
+    return events.filter(event => isSameDay(new Date(event.date), day));
+  };
+
   return (
     <MainLayout>
-      <div className="container mx-auto py-6 animate-fade-in">
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-800">{t('administrative.calendarTitle')}</h1>
-            <p className="text-gray-500">{t('administrative.calendarDescription')}</p>
-          </div>
-          <Button onClick={() => setIsDialogOpen(true)}>
-            <Plus size={18} className="mr-2" /> {t('administrative.addEvent')}
-          </Button>
+      <div className="animate-fade-in">
+        <CalendarHeader 
+          currentDate={currentMonth} 
+          onPrevMonth={prevMonth}
+          onNextMonth={nextMonth}
+          onAddEvent={() => setIsAddEventDialogOpen(true)}
+        />
+        
+        <div className="grid grid-cols-1 md:grid-cols-7 gap-4 mb-6">
+          {['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'].map((day, index) => (
+            <div key={index} className="hidden md:block text-center font-medium text-sm py-2">
+              {day}
+            </div>
+          ))}
+          
+          {calendarDays.map((day, index) => {
+            const dayEvents = getEventsForDay(day);
+            const isCurrentMonth = isSameMonth(day, currentMonth);
+            const isCurrentDay = isToday(day);
+            
+            return (
+              <Card 
+                key={index} 
+                className={`min-h-[120px] cursor-pointer transition-colors ${
+                  !isCurrentMonth ? 'opacity-40' : ''
+                } ${
+                  isCurrentDay ? 'border-church-primary' : ''
+                }`}
+                onClick={() => handleDateClick(day)}
+              >
+                <CardContent className="p-2">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className={`text-sm font-medium ${
+                      isCurrentDay ? 'bg-church-primary text-white rounded-full w-6 h-6 flex items-center justify-center' : ''
+                    }`}>
+                      {format(day, 'd')}
+                    </span>
+                    <span className="text-xs text-gray-500 md:hidden">
+                      {format(day, 'E', { locale: ptBR })}
+                    </span>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    {dayEvents.slice(0, 3).map((event) => (
+                      <div 
+                        key={event.id} 
+                        className={`text-xs p-1 rounded truncate ${
+                          event.type === 'service' ? 'bg-blue-100 text-blue-800' :
+                          event.type === 'meeting' ? 'bg-amber-100 text-amber-800' :
+                          event.type === 'special' ? 'bg-purple-100 text-purple-800' :
+                          'bg-gray-100 text-gray-800'
+                        }`}
+                      >
+                        <div className="flex items-center">
+                          <Clock className="h-3 w-3 mr-1" />
+                          <span>{event.time}</span>
+                        </div>
+                        <div className="truncate">{event.title}</div>
+                      </div>
+                    ))}
+                    
+                    {dayEvents.length > 3 && (
+                      <div className="text-xs text-gray-500 text-center">
+                        +{dayEvents.length - 3} mais
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Calendar section */}
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CalendarHeader 
-                currentMonth={currentMonth}
-                onPreviousMonth={handlePreviousMonth}
-                onNextMonth={handleNextMonth}
-              />
-            </CardHeader>
-            <CardContent>
-              <Calendar
-                mode="single"
-                selected={selectedDate}
-                onSelect={setSelectedDate}
-                month={currentMonth}
-                onMonthChange={setCurrentMonth}
-                className="rounded-md border p-3 pointer-events-auto"
-                modifiers={{
-                  event: eventDates,
-                }}
-                modifiersStyles={{
-                  event: { 
-                    fontWeight: 'bold',
-                    backgroundColor: '#e5deff', 
-                    color: '#7e69ab',
-                    borderRadius: '4px'
-                  }
-                }}
-                classNames={{
-                  day_today: "bg-church-light text-church-primary",
-                }}
-              />
+        
+        <div className="flex flex-col md:flex-row gap-4 mb-6">
+          <Card className="flex-1">
+            <CardContent className="p-4">
+              <h3 className="text-lg font-semibold mb-4 flex items-center">
+                <Calendar className="mr-2 h-5 w-5 text-church-primary" />
+                Próximos Eventos
+              </h3>
+              
+              <div className="space-y-3">
+                {events
+                  .filter(event => new Date(event.date) >= new Date())
+                  .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                  .slice(0, 5)
+                  .map(event => (
+                    <div key={event.id} className="flex items-start border-b pb-3">
+                      <div className={`p-2 rounded-md mr-3 ${
+                        event.type === 'service' ? 'bg-blue-100 text-blue-800' :
+                        event.type === 'meeting' ? 'bg-amber-100 text-amber-800' :
+                        event.type === 'special' ? 'bg-purple-100 text-purple-800' :
+                        'bg-gray-100 text-gray-800'
+                      }`}>
+                        <Calendar className="h-5 w-5" />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-medium">{event.title}</h4>
+                        <div className="text-sm text-gray-500 flex items-center">
+                          <Calendar className="h-3 w-3 mr-1" />
+                          {format(new Date(event.date), 'dd/MM/yyyy')}
+                          <Clock className="h-3 w-3 ml-2 mr-1" />
+                          {event.time}
+                        </div>
+                      </div>
+                      <Button variant="ghost" size="sm">
+                        <Info className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+              </div>
+              
+              {events.filter(event => new Date(event.date) >= new Date()).length === 0 && (
+                <div className="text-center py-6 text-gray-500">
+                  Nenhum evento programado
+                </div>
+              )}
             </CardContent>
           </Card>
-
-          {/* Events for selected date */}
-          <SelectedDateEvents selectedDate={selectedDate} events={events} />
+          
+          <Card className="w-full md:w-80">
+            <CardContent className="p-4">
+              <h3 className="text-lg font-semibold mb-4">Legenda</h3>
+              <div className="space-y-2">
+                <div className="flex items-center">
+                  <div className="w-4 h-4 rounded bg-blue-100 mr-2"></div>
+                  <span className="text-sm">Cultos</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-4 h-4 rounded bg-amber-100 mr-2"></div>
+                  <span className="text-sm">Reuniões</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-4 h-4 rounded bg-purple-100 mr-2"></div>
+                  <span className="text-sm">Eventos Especiais</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-4 h-4 rounded bg-gray-100 mr-2"></div>
+                  <span className="text-sm">Outros</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
-
-        {/* Event tabs section */}
-        <div className="mt-6">
-          <EventTabs events={events} />
-        </div>
-
-        {/* Add event dialog */}
-        <AddEventDialog 
-          isOpen={isDialogOpen}
-          onOpenChange={setIsDialogOpen}
-          selectedDate={selectedDate}
-          onAddEvent={handleAddEvent}
-        />
       </div>
+      
+      <AddEventDialog 
+        open={isAddEventDialogOpen} 
+        onOpenChange={setIsAddEventDialogOpen}
+        selectedDate={selectedDate}
+        onAddEvent={handleAddEvent}
+      />
     </MainLayout>
   );
 };
