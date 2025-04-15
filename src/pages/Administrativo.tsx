@@ -1,29 +1,65 @@
 
 import React from 'react';
 import MainLayout from '@/components/layout/MainLayout';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { 
   Users, Search, UserPlus, FileText, UserCheck, 
-  FileUp, Mic, Send, Mail, Phone
+  FileUp, Mic, Send, Mail, Phone, Calendar
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const Administrativo = () => {
+  const { t } = useTranslation();
+  
   return (
     <MainLayout>
       <div className="animate-fade-in">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Módulo Administrativo</h1>
-            <p className="text-gray-500">Gerencie membros, atas e comunicados da igreja</p>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-800">{t('administrative.title')}</h1>
+            <p className="text-gray-500">{t('administrative.subtitle')}</p>
           </div>
           <div className="flex space-x-2">
             <Button>
-              <UserPlus size={18} className="mr-2" /> Novo Membro
+              <UserPlus size={18} className="mr-2" /> {t('administrative.newMember')}
             </Button>
           </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+          <Link to="/administrativo/membros" className="dashboard-card flex items-start group">
+            <div className="mr-4 bg-church-light p-3 rounded-lg text-church-primary">
+              <Users size={24} />
+            </div>
+            <div>
+              <h3 className="font-semibold text-lg">{t('administrative.members')}</h3>
+              <p className="text-gray-500 mt-1 text-sm">{t('administrative.membersDescription')}</p>
+            </div>
+          </Link>
+          
+          <Link to="/administrativo/calendario" className="dashboard-card flex items-start group">
+            <div className="mr-4 bg-church-light p-3 rounded-lg text-church-primary">
+              <Calendar size={24} />
+            </div>
+            <div>
+              <h3 className="font-semibold text-lg">{t('administrative.events')}</h3>
+              <p className="text-gray-500 mt-1 text-sm">{t('administrative.eventsDescription')}</p>
+            </div>
+          </Link>
+          
+          <Link to="/administrativo/comunicados" className="dashboard-card flex items-start group">
+            <div className="mr-4 bg-church-light p-3 rounded-lg text-church-primary">
+              <Mail size={24} />
+            </div>
+            <div>
+              <h3 className="font-semibold text-lg">{t('administrative.communications')}</h3>
+              <p className="text-gray-500 mt-1 text-sm">{t('administrative.communicationsDescription')}</p>
+            </div>
+          </Link>
         </div>
 
         <Tabs defaultValue="membros" className="mb-6">

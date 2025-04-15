@@ -1,4 +1,3 @@
-
 export default {
   // Global
   'app.name': 'ChurchManager',
@@ -25,12 +24,20 @@ export default {
   'dashboard.title': 'Church Dashboard',
   'dashboard.welcome': 'Welcome to ChurchManager',
   'dashboard.members': 'Members',
+  'dashboard.activeMembers': 'Active Members',
   'dashboard.income': 'Income',
   'dashboard.expenses': 'Expenses',
   'dashboard.balance': 'Balance',
   'dashboard.thisMonth': 'This month',
   'dashboard.thisYear': 'This year',
   'dashboard.upcomingEvents': 'Upcoming Events',
+  'dashboard.nextEvent': 'Next Event',
+  'dashboard.worshipService': 'Worship Service',
+  'dashboard.sunday19h': 'Sunday, 7pm',
+  'dashboard.currentRepertoire': 'Current Repertoire',
+  'dashboard.updatedToday': 'Updated today',
+  'dashboard.membersLastMonth': '+5 in the last month',
+  'dashboard.updatedDaysAgo': 'Updated {{days}} days ago',
   
   // Financial
   'financial.title': 'Financial Management',
@@ -44,10 +51,38 @@ export default {
   
   // Administrative
   'administrative.title': 'Administrative Management',
+  'administrative.subtitle': 'Manage members, meetings, and communications',
   'administrative.members': 'Members',
+  'administrative.membersDescription': 'Register and manage church members',
+  'administrative.events': 'Events',
+  'administrative.eventsDescription': 'Manage all church events and calendar',
+  'administrative.communications': 'Communications',
+  'administrative.communicationsDescription': 'Send and manage communications',
   'administrative.meetings': 'Meetings',
   'administrative.documents': 'Documents',
-  'administrative.communications': 'Communications',
+  'administrative.newMember': 'New Member',
+  
+  // Calendar
+  'administrative.calendarTitle': 'Church Events Calendar',
+  'administrative.calendarDescription': 'Manage all church events in one place',
+  'administrative.churchCalendar': 'Church Calendar',
+  'administrative.addEvent': 'Add Event',
+  'administrative.selectDate': 'Select a date',
+  'administrative.eventsCount': '{{count}} events scheduled',
+  'administrative.noEvents': 'No events for this date',
+  'administrative.noEventsTitle': 'No events found',
+  'administrative.noEventsForDate': 'There are no events scheduled for this date',
+  'administrative.selectDateToSeeEvents': 'Select a date to see events',
+  'administrative.upcomingEvents': 'Upcoming Events',
+  'administrative.upcomingEventsDescription': 'Events scheduled for the coming days',
+  'administrative.pastEvents': 'Past Events',
+  'administrative.pastEventsPlaceholder': 'View past events history here',
+  'administrative.recurringEvents': 'Recurring Events',
+  'administrative.recurringEventsPlaceholder': 'View and manage recurring events',
+  'administrative.eventType.service': 'Service',
+  'administrative.eventType.meeting': 'Meeting',
+  'administrative.eventType.special': 'Special',
+  'administrative.eventType.other': 'Other',
   
   // Music
   'music.title': 'Music Management',

@@ -1,36 +1,42 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import MainLayout from '@/components/layout/MainLayout';
 import DashboardCard from '@/components/dashboard/DashboardCard';
 import StatCard from '@/components/dashboard/StatCard';
 import { DollarSign, Users, Music, Calendar, Clock, ChevronUp } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const Index = () => {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  
   // Dados de exemplo (substituir por dados reais)
   const stats = [
     { 
-      title: 'Saldo Atual', 
+      title: t('dashboard.balance'), 
       value: 'R$ 15.420,00', 
-      description: 'Atualizado hoje', 
+      description: t('dashboard.updatedToday'), 
       icon: <DollarSign size={18} />,
       trend: { value: 12, isPositive: true }
     },
     { 
-      title: 'Membros Ativos', 
+      title: t('dashboard.activeMembers'), 
       value: '245', 
-      description: '+5 no último mês',
+      description: t('dashboard.membersLastMonth'),
       icon: <Users size={18} />
     },
     { 
-      title: 'Próximo Evento', 
-      value: 'Culto de Louvor', 
-      description: 'Domingo, 19h',
-      icon: <Calendar size={18} />
+      title: t('dashboard.nextEvent'), 
+      value: t('dashboard.worshipService'), 
+      description: t('dashboard.sunday19h'),
+      icon: <Calendar size={18} />,
+      onClick: () => navigate('/administrativo/calendario')
     },
     { 
-      title: 'Repertório Atual', 
+      title: t('dashboard.currentRepertoire'), 
       value: '12 músicas', 
-      description: 'Atualizado há 2 dias',
+      description: t('dashboard.updatedDaysAgo', { days: 2 }),
       icon: <Music size={18} />
     }
   ];
@@ -39,8 +45,8 @@ const Index = () => {
     <MainLayout>
       <div className="animate-fade-in">
         <div className="mb-6">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Painel de Controle</h1>
-          <p className="text-gray-500">Bem-vindo ao Sistema de Gestão da Igreja</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-800">{t('dashboard.title')}</h1>
+          <p className="text-gray-500">{t('dashboard.welcome')}</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -52,6 +58,7 @@ const Index = () => {
               description={stat.description}
               icon={stat.icon}
               trend={stat.trend}
+              onClick={stat.onClick}
             />
           ))}
         </div>

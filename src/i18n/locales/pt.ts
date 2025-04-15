@@ -1,4 +1,3 @@
-
 export default {
   // Global
   'app.name': 'IgrejaManager',
@@ -25,12 +24,20 @@ export default {
   'dashboard.title': 'Dashboard da Igreja',
   'dashboard.welcome': 'Bem-vindo ao IgrejaManager',
   'dashboard.members': 'Membros',
+  'dashboard.activeMembers': 'Membros Ativos',
   'dashboard.income': 'Receitas',
   'dashboard.expenses': 'Despesas',
   'dashboard.balance': 'Saldo',
   'dashboard.thisMonth': 'Este mês',
   'dashboard.thisYear': 'Este ano',
   'dashboard.upcomingEvents': 'Próximos Eventos',
+  'dashboard.nextEvent': 'Próximo Evento',
+  'dashboard.worshipService': 'Culto de Louvor',
+  'dashboard.sunday19h': 'Domingo, 19h',
+  'dashboard.currentRepertoire': 'Repertório Atual',
+  'dashboard.updatedToday': 'Atualizado hoje',
+  'dashboard.membersLastMonth': '+5 no último mês',
+  'dashboard.updatedDaysAgo': 'Atualizado há {{days}} dias',
   
   // Financial
   'financial.title': 'Gestão Financeira',
@@ -44,10 +51,38 @@ export default {
   
   // Administrative
   'administrative.title': 'Gestão Administrativa',
+  'administrative.subtitle': 'Gerencie membros, reuniões e comunicados',
   'administrative.members': 'Membros',
+  'administrative.membersDescription': 'Cadastre e gerencie membros da igreja',
+  'administrative.events': 'Eventos',
+  'administrative.eventsDescription': 'Gerencie todos os eventos e calendário da igreja',
+  'administrative.communications': 'Comunicados',
+  'administrative.communicationsDescription': 'Envie e gerencie comunicados',
   'administrative.meetings': 'Reuniões',
   'administrative.documents': 'Documentos',
-  'administrative.communications': 'Comunicados',
+  'administrative.newMember': 'Novo Membro',
+  
+  // Calendar
+  'administrative.calendarTitle': 'Calendário de Eventos da Igreja',
+  'administrative.calendarDescription': 'Gerencie todos os eventos da igreja em um só lugar',
+  'administrative.churchCalendar': 'Calendário da Igreja',
+  'administrative.addEvent': 'Adicionar Evento',
+  'administrative.selectDate': 'Selecione uma data',
+  'administrative.eventsCount': '{{count}} eventos agendados',
+  'administrative.noEvents': 'Sem eventos para esta data',
+  'administrative.noEventsTitle': 'Nenhum evento encontrado',
+  'administrative.noEventsForDate': 'Não há eventos agendados para esta data',
+  'administrative.selectDateToSeeEvents': 'Selecione uma data para ver os eventos',
+  'administrative.upcomingEvents': 'Próximos Eventos',
+  'administrative.upcomingEventsDescription': 'Eventos programados para os próximos dias',
+  'administrative.pastEvents': 'Eventos Passados',
+  'administrative.pastEventsPlaceholder': 'Visualize o histórico de eventos passados aqui',
+  'administrative.recurringEvents': 'Eventos Recorrentes',
+  'administrative.recurringEventsPlaceholder': 'Visualize e gerencie eventos recorrentes',
+  'administrative.eventType.service': 'Culto',
+  'administrative.eventType.meeting': 'Reunião',
+  'administrative.eventType.special': 'Especial',
+  'administrative.eventType.other': 'Outro',
   
   // Music
   'music.title': 'Gestão de Música',

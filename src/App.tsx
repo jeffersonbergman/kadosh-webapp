@@ -12,6 +12,7 @@ import Musica from "./pages/Musica";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Settings from "./pages/Settings";
+import AdminCalendar from "./pages/AdminCalendar";
 import './i18n';
 
 const queryClient = new QueryClient();
@@ -53,6 +54,14 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <Administrativo />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/administrativo/calendario" 
+          element={
+            <ProtectedRoute>
+              <AdminCalendar />
             </ProtectedRoute>
           } 
         />
