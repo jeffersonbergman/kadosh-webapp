@@ -1,16 +1,63 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { 
   Music, Calendar, ListMusic, PlusCircle, Search, 
-  ChevronRight, UserPlus, Clock, FileMusic, Mic
+  ChevronRight, UserPlus, Clock, FileMusic, Mic, 
+  Edit, Trash2, Plus, Share, Download, Upload, CheckCircle2, 
+  Eye, Filter, SlidersHorizontal, Disc3
 } from 'lucide-react';
+import { useToast } from "@/hooks/use-toast";
 
 const Musica = () => {
+  const { toast } = useToast();
+  const [musicianDialogOpen, setMusicianDialogOpen] = useState(false);
+  const [scaleDialogOpen, setScaleDialogOpen] = useState(false);
+  const [repertoireDialogOpen, setRepertoireDialogOpen] = useState(false);
+  const [songDialogOpen, setSongDialogOpen] = useState(false);
+
+  const handleNewMusician = (event: React.FormEvent) => {
+    event.preventDefault();
+    setMusicianDialogOpen(false);
+    toast({
+      title: "Músico adicionado",
+      description: "O novo músico foi adicionado com sucesso.",
+    });
+  };
+
+  const handleNewScale = (event: React.FormEvent) => {
+    event.preventDefault();
+    setScaleDialogOpen(false);
+    toast({
+      title: "Escala criada",
+      description: "A nova escala foi criada com sucesso.",
+    });
+  };
+
+  const handleNewRepertoire = (event: React.FormEvent) => {
+    event.preventDefault();
+    setRepertoireDialogOpen(false);
+    toast({
+      title: "Repertório criado",
+      description: "O novo repertório foi criado com sucesso.",
+    });
+  };
+
+  const handleNewSong = (event: React.FormEvent) => {
+    event.preventDefault();
+    setSongDialogOpen(false);
+    toast({
+      title: "Música adicionada",
+      description: "A nova música foi adicionada com sucesso.",
+    });
+  };
+
   return (
     <MainLayout>
       <div className="animate-fade-in">
@@ -20,12 +67,140 @@ const Musica = () => {
             <p className="text-gray-500">Gerencie escalas, repertórios e recursos para a equipe de louvor</p>
           </div>
           <div className="flex space-x-2">
-            <Button variant="outline" className="hidden md:flex">
-              <UserPlus size={18} className="mr-2" /> Novo Músico
-            </Button>
-            <Button>
-              <PlusCircle size={18} className="mr-2" /> Nova Escala
-            </Button>
+            <Dialog open={musicianDialogOpen} onOpenChange={setMusicianDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="hidden md:flex">
+                  <UserPlus size={18} className="mr-2" /> Novo Músico
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Adicionar Novo Músico</DialogTitle>
+                  <DialogDescription>
+                    Preencha os dados do novo integrante da equipe de louvor.
+                  </DialogDescription>
+                </DialogHeader>
+                <form onSubmit={handleNewMusician}>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="name" className="text-right">
+                        Nome
+                      </Label>
+                      <Input id="name" className="col-span-3" required />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="instrument" className="text-right">
+                        Instrumento
+                      </Label>
+                      <Select>
+                        <SelectTrigger className="col-span-3">
+                          <SelectValue placeholder="Selecione um instrumento" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="vocal">Vocal</SelectItem>
+                          <SelectItem value="guitarra">Guitarra</SelectItem>
+                          <SelectItem value="violao">Violão</SelectItem>
+                          <SelectItem value="baixo">Baixo</SelectItem>
+                          <SelectItem value="bateria">Bateria</SelectItem>
+                          <SelectItem value="teclado">Teclado</SelectItem>
+                          <SelectItem value="piano">Piano</SelectItem>
+                          <SelectItem value="violino">Violino</SelectItem>
+                          <SelectItem value="saxofone">Saxofone</SelectItem>
+                          <SelectItem value="outro">Outro</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="phone" className="text-right">
+                        Telefone
+                      </Label>
+                      <Input id="phone" className="col-span-3" />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="status" className="text-right">
+                        Status
+                      </Label>
+                      <Select>
+                        <SelectTrigger className="col-span-3">
+                          <SelectValue placeholder="Selecione um status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="ativo">Ativo</SelectItem>
+                          <SelectItem value="ocasional">Ocasional</SelectItem>
+                          <SelectItem value="inativo">Inativo</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button type="submit">Salvar</Button>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
+
+            <Dialog open={scaleDialogOpen} onOpenChange={setScaleDialogOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <PlusCircle size={18} className="mr-2" /> Nova Escala
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Criar Nova Escala</DialogTitle>
+                  <DialogDescription>
+                    Defina os detalhes e os músicos para a nova escala.
+                  </DialogDescription>
+                </DialogHeader>
+                <form onSubmit={handleNewScale}>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="event-name" className="text-right">
+                        Evento
+                      </Label>
+                      <Input id="event-name" className="col-span-3" placeholder="Ex: Culto de Domingo - Manhã" required />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="date" className="text-right">
+                        Data
+                      </Label>
+                      <Input id="date" type="date" className="col-span-3" required />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="start-time" className="text-right">
+                        Horário Início
+                      </Label>
+                      <Input id="start-time" type="time" className="col-span-3" required />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="end-time" className="text-right">
+                        Horário Fim
+                      </Label>
+                      <Input id="end-time" type="time" className="col-span-3" required />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="musicians" className="text-right">
+                        Músicos
+                      </Label>
+                      <div className="col-span-3 space-y-2">
+                        <div className="flex items-center justify-between border p-2 rounded-md">
+                          <span>João Silva (Bateria)</span>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <Trash2 size={16} />
+                          </Button>
+                        </div>
+                        <Button variant="outline" size="sm" className="w-full">
+                          <Plus size={16} className="mr-2" /> Adicionar Músico
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button type="submit">Criar Escala</Button>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
 
@@ -48,9 +223,16 @@ const Musica = () => {
                     <Button variant="outline" size="sm" className="hidden md:flex">
                       <Calendar size={16} className="mr-2" /> Calendário
                     </Button>
-                    <Button size="sm">
-                      <PlusCircle size={16} className="mr-2" /> Nova Escala
+                    <Button variant="outline" size="sm" className="hidden md:flex">
+                      <Filter size={16} className="mr-2" /> Filtrar
                     </Button>
+                    <Dialog open={scaleDialogOpen} onOpenChange={setScaleDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button size="sm">
+                          <PlusCircle size={16} className="mr-2" /> Nova Escala
+                        </Button>
+                      </DialogTrigger>
+                    </Dialog>
                   </div>
                 </div>
               </CardHeader>
@@ -73,10 +255,21 @@ const Musica = () => {
                         <span className="bg-yellow-100 text-yellow-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full hidden md:inline-flex">
                           6 músicos
                         </span>
-                        <Button variant="ghost" size="sm" className="flex items-center">
-                          <span>Detalhes</span>
-                          <ChevronRight size={16} className="ml-1" />
-                        </Button>
+                        <div className="flex space-x-1">
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <Edit size={16} />
+                          </Button>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <Trash2 size={16} />
+                          </Button>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <Share size={16} />
+                          </Button>
+                          <Button variant="ghost" size="sm" className="flex items-center">
+                            <span>Detalhes</span>
+                            <ChevronRight size={16} className="ml-1" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
                     <div className="mt-3 md:pl-12">
@@ -114,10 +307,21 @@ const Musica = () => {
                         <span className="bg-yellow-100 text-yellow-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full hidden md:inline-flex">
                           5 músicos
                         </span>
-                        <Button variant="ghost" size="sm" className="flex items-center">
-                          <span>Detalhes</span>
-                          <ChevronRight size={16} className="ml-1" />
-                        </Button>
+                        <div className="flex space-x-1">
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <Edit size={16} />
+                          </Button>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <Trash2 size={16} />
+                          </Button>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <Share size={16} />
+                          </Button>
+                          <Button variant="ghost" size="sm" className="flex items-center">
+                            <span>Detalhes</span>
+                            <ChevronRight size={16} className="ml-1" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
                     <div className="mt-3 md:pl-12">
@@ -155,10 +359,21 @@ const Musica = () => {
                         <span className="bg-yellow-100 text-yellow-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full hidden md:inline-flex">
                           4 músicos
                         </span>
-                        <Button variant="ghost" size="sm" className="flex items-center">
-                          <span>Detalhes</span>
-                          <ChevronRight size={16} className="ml-1" />
-                        </Button>
+                        <div className="flex space-x-1">
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <Edit size={16} />
+                          </Button>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <Trash2 size={16} />
+                          </Button>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <Share size={16} />
+                          </Button>
+                          <Button variant="ghost" size="sm" className="flex items-center">
+                            <span>Detalhes</span>
+                            <ChevronRight size={16} className="ml-1" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
                     <div className="mt-3 md:pl-12">
@@ -193,10 +408,21 @@ const Musica = () => {
                         <span className="bg-yellow-100 text-yellow-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full hidden md:inline-flex">
                           8 músicos
                         </span>
-                        <Button variant="ghost" size="sm" className="flex items-center">
-                          <span>Detalhes</span>
-                          <ChevronRight size={16} className="ml-1" />
-                        </Button>
+                        <div className="flex space-x-1">
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <Edit size={16} />
+                          </Button>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <Trash2 size={16} />
+                          </Button>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <Share size={16} />
+                          </Button>
+                          <Button variant="ghost" size="sm" className="flex items-center">
+                            <span>Detalhes</span>
+                            <ChevronRight size={16} className="ml-1" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
                     <div className="mt-3 md:pl-12">
@@ -238,9 +464,127 @@ const Musica = () => {
                         className="pl-8"
                       />
                     </div>
-                    <Button size="sm">
-                      <ListMusic size={16} className="mr-2" /> Novo Repertório
-                    </Button>
+                    <Dialog open={songDialogOpen} onOpenChange={setSongDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" size="sm">
+                          <FileMusic size={16} className="mr-2" /> Nova Música
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Adicionar Nova Música</DialogTitle>
+                          <DialogDescription>
+                            Cadastre uma nova música para o repertório.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <form onSubmit={handleNewSong}>
+                          <div className="grid gap-4 py-4">
+                            <div className="grid grid-cols-4 items-center gap-4">
+                              <Label htmlFor="song-title" className="text-right">
+                                Título
+                              </Label>
+                              <Input id="song-title" className="col-span-3" required />
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                              <Label htmlFor="song-artist" className="text-right">
+                                Artista
+                              </Label>
+                              <Input id="song-artist" className="col-span-3" required />
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                              <Label htmlFor="song-tone" className="text-right">
+                                Tom
+                              </Label>
+                              <Select>
+                                <SelectTrigger className="col-span-3">
+                                  <SelectValue placeholder="Selecione o tom" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="C">C (Dó)</SelectItem>
+                                  <SelectItem value="D">D (Ré)</SelectItem>
+                                  <SelectItem value="E">E (Mi)</SelectItem>
+                                  <SelectItem value="F">F (Fá)</SelectItem>
+                                  <SelectItem value="G">G (Sol)</SelectItem>
+                                  <SelectItem value="A">A (Lá)</SelectItem>
+                                  <SelectItem value="B">B (Si)</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                              <Label htmlFor="song-bpm" className="text-right">
+                                BPM
+                              </Label>
+                              <Input id="song-bpm" type="number" className="col-span-3" />
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                              <Label htmlFor="song-lyrics" className="text-right">
+                                Letra/Cifra
+                              </Label>
+                              <Input id="song-lyrics" type="file" className="col-span-3" />
+                            </div>
+                          </div>
+                          <DialogFooter>
+                            <Button type="submit">Adicionar Música</Button>
+                          </DialogFooter>
+                        </form>
+                      </DialogContent>
+                    </Dialog>
+                    <Dialog open={repertoireDialogOpen} onOpenChange={setRepertoireDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button size="sm">
+                          <ListMusic size={16} className="mr-2" /> Novo Repertório
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Criar Novo Repertório</DialogTitle>
+                          <DialogDescription>
+                            Defina as músicas para o novo repertório.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <form onSubmit={handleNewRepertoire}>
+                          <div className="grid gap-4 py-4">
+                            <div className="grid grid-cols-4 items-center gap-4">
+                              <Label htmlFor="rep-name" className="text-right">
+                                Nome
+                              </Label>
+                              <Input id="rep-name" className="col-span-3" placeholder="Ex: Culto de Domingo - Manhã (21/04)" required />
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                              <Label htmlFor="rep-date" className="text-right">
+                                Data
+                              </Label>
+                              <Input id="rep-date" type="date" className="col-span-3" required />
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                              <Label htmlFor="rep-songs" className="text-right">
+                                Músicas
+                              </Label>
+                              <div className="col-span-3 space-y-2">
+                                <div className="flex items-center justify-between border p-2 rounded-md">
+                                  <span>Grande é o Senhor (Adhemar de Campos)</span>
+                                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                    <Trash2 size={16} />
+                                  </Button>
+                                </div>
+                                <Button variant="outline" size="sm" className="w-full">
+                                  <Plus size={16} className="mr-2" /> Adicionar Música
+                                </Button>
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                              <Label htmlFor="rep-notes" className="text-right">
+                                Observações
+                              </Label>
+                              <Input id="rep-notes" className="col-span-3" placeholder="Notas adicionais para a equipe" />
+                            </div>
+                          </div>
+                          <DialogFooter>
+                            <Button type="submit">Criar Repertório</Button>
+                          </DialogFooter>
+                        </form>
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 </div>
               </CardHeader>
@@ -260,10 +604,24 @@ const Musica = () => {
                         </div>
                       </div>
                       <div className="flex items-center mt-3 md:mt-0">
-                        <Button variant="ghost" size="sm" className="flex items-center">
-                          <span>Ver Repertório</span>
-                          <ChevronRight size={16} className="ml-1" />
-                        </Button>
+                        <div className="flex space-x-1">
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <Edit size={16} />
+                          </Button>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <Trash2 size={16} />
+                          </Button>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <Download size={16} />
+                          </Button>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <Share size={16} />
+                          </Button>
+                          <Button variant="ghost" size="sm" className="flex items-center">
+                            <span>Ver Repertório</span>
+                            <ChevronRight size={16} className="ml-1" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
                     <div className="mt-3 md:pl-12">
@@ -303,10 +661,21 @@ const Musica = () => {
                         </div>
                       </div>
                       <div className="flex items-center mt-3 md:mt-0">
-                        <Button variant="ghost" size="sm" className="flex items-center">
-                          <span>Ver Repertório</span>
-                          <ChevronRight size={16} className="ml-1" />
-                        </Button>
+                        <div className="flex space-x-1">
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <Edit size={16} />
+                          </Button>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <Trash2 size={16} />
+                          </Button>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <Share size={16} />
+                          </Button>
+                          <Button variant="ghost" size="sm" className="flex items-center">
+                            <span>Detalhes</span>
+                            <ChevronRight size={16} className="ml-1" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
                     <div className="mt-3 md:pl-12">
@@ -346,10 +715,21 @@ const Musica = () => {
                         </div>
                       </div>
                       <div className="flex items-center mt-3 md:mt-0">
-                        <Button variant="ghost" size="sm" className="flex items-center">
-                          <span>Ver Repertório</span>
-                          <ChevronRight size={16} className="ml-1" />
-                        </Button>
+                        <div className="flex space-x-1">
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <Edit size={16} />
+                          </Button>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <Trash2 size={16} />
+                          </Button>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <Share size={16} />
+                          </Button>
+                          <Button variant="ghost" size="sm" className="flex items-center">
+                            <span>Detalhes</span>
+                            <ChevronRight size={16} className="ml-1" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
                     <div className="mt-3 md:pl-12">
@@ -388,9 +768,24 @@ const Musica = () => {
                     <CardDescription>Gerenciamento da equipe de louvor</CardDescription>
                   </div>
                   <div className="flex space-x-2">
-                    <Button>
-                      <UserPlus size={18} className="mr-2" /> Novo Músico
+                    <div className="relative flex-grow md:w-64 mr-2">
+                      <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+                      <Input
+                        type="search"
+                        placeholder="Buscar músico..."
+                        className="pl-8"
+                      />
+                    </div>
+                    <Button variant="outline" size="sm">
+                      <SlidersHorizontal size={16} className="mr-2" /> Filtrar
                     </Button>
+                    <Dialog open={musicianDialogOpen} onOpenChange={setMusicianDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button size="sm">
+                          <UserPlus size={16} className="mr-2" /> Novo Músico
+                        </Button>
+                      </DialogTrigger>
+                    </Dialog>
                   </div>
                 </div>
               </CardHeader>
@@ -418,7 +813,15 @@ const Musica = () => {
                             </span>
                           </td>
                           <td className="p-4 align-middle">
-                            <Button variant="ghost" size="sm">Detalhes</Button>
+                            <div className="flex space-x-1">
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                <Edit size={16} />
+                              </Button>
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                <Trash2 size={16} />
+                              </Button>
+                              <Button variant="ghost" size="sm">Detalhes</Button>
+                            </div>
                           </td>
                         </tr>
                         <tr className="border-b transition-colors hover:bg-muted/50">
@@ -431,7 +834,15 @@ const Musica = () => {
                             </span>
                           </td>
                           <td className="p-4 align-middle">
-                            <Button variant="ghost" size="sm">Detalhes</Button>
+                            <div className="flex space-x-1">
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                <Edit size={16} />
+                              </Button>
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                <Trash2 size={16} />
+                              </Button>
+                              <Button variant="ghost" size="sm">Detalhes</Button>
+                            </div>
                           </td>
                         </tr>
                         <tr className="border-b transition-colors hover:bg-muted/50">
@@ -444,7 +855,15 @@ const Musica = () => {
                             </span>
                           </td>
                           <td className="p-4 align-middle">
-                            <Button variant="ghost" size="sm">Detalhes</Button>
+                            <div className="flex space-x-1">
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                <Edit size={16} />
+                              </Button>
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                <Trash2 size={16} />
+                              </Button>
+                              <Button variant="ghost" size="sm">Detalhes</Button>
+                            </div>
                           </td>
                         </tr>
                         <tr className="border-b transition-colors hover:bg-muted/50">
@@ -457,7 +876,15 @@ const Musica = () => {
                             </span>
                           </td>
                           <td className="p-4 align-middle">
-                            <Button variant="ghost" size="sm">Detalhes</Button>
+                            <div className="flex space-x-1">
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                <Edit size={16} />
+                              </Button>
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                <Trash2 size={16} />
+                              </Button>
+                              <Button variant="ghost" size="sm">Detalhes</Button>
+                            </div>
                           </td>
                         </tr>
                         <tr className="border-b transition-colors hover:bg-muted/50">
@@ -470,7 +897,15 @@ const Musica = () => {
                             </span>
                           </td>
                           <td className="p-4 align-middle">
-                            <Button variant="ghost" size="sm">Detalhes</Button>
+                            <div className="flex space-x-1">
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                <Edit size={16} />
+                              </Button>
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                <Trash2 size={16} />
+                              </Button>
+                              <Button variant="ghost" size="sm">Detalhes</Button>
+                            </div>
                           </td>
                         </tr>
                         <tr className="transition-colors hover:bg-muted/50">
@@ -483,7 +918,15 @@ const Musica = () => {
                             </span>
                           </td>
                           <td className="p-4 align-middle">
-                            <Button variant="ghost" size="sm">Detalhes</Button>
+                            <div className="flex space-x-1">
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                <Edit size={16} />
+                              </Button>
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                <Trash2 size={16} />
+                              </Button>
+                              <Button variant="ghost" size="sm">Detalhes</Button>
+                            </div>
                           </td>
                         </tr>
                       </tbody>
