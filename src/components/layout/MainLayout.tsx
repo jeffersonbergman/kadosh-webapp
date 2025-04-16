@@ -9,7 +9,8 @@ import {
   SidebarGroup, 
   SidebarGroupLabel, 
   SidebarGroupContent,
-  SidebarFooter
+  SidebarFooter,
+  SidebarProvider
 } from '@/components/ui/sidebar';
 import { useApp } from '@/contexts/AppContext';
 import { useNavigate } from 'react-router-dom';
@@ -71,43 +72,45 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   ];
 
   return (
-    <div className="flex h-screen bg-gray-100 text-gray-700">
-      <Sidebar>
-        <SidebarContent>
-          <SidebarGroup>
-            <SidebarGroupLabel>Menu</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {menuItems.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton 
-                      onClick={item.onClick}
-                      tooltip={item.title}
-                    >
-                      <item.icon className="mr-2" />
-                      <span>{item.title}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        </SidebarContent>
-        <SidebarFooter>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton onClick={() => navigate('/login')}>
-                <LogOut className="mr-2" />
-                <span>Sair</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarFooter>
-      </Sidebar>
-      <div className="flex-1 overflow-x-hidden overflow-y-auto p-6">
-        {children}
+    <SidebarProvider>
+      <div className="flex h-screen w-full bg-gray-100 text-gray-700">
+        <Sidebar>
+          <SidebarContent>
+            <SidebarGroup>
+              <SidebarGroupLabel>Menu</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {menuItems.map((item) => (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton 
+                        onClick={item.onClick}
+                        tooltip={item.title}
+                      >
+                        <item.icon className="mr-2" />
+                        <span>{item.title}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          </SidebarContent>
+          <SidebarFooter>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton onClick={() => navigate('/login')}>
+                  <LogOut className="mr-2" />
+                  <span>Sair</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarFooter>
+        </Sidebar>
+        <div className="flex-1 overflow-x-hidden overflow-y-auto p-6">
+          {children}
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 };
 
