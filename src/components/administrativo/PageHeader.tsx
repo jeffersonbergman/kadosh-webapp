@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { UserPlus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-const PageHeader = () => {
+const PageHeader: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   

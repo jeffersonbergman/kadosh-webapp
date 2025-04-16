@@ -18,19 +18,26 @@ interface AddEventDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onAddEvent: (event: any) => void;
+  selectedDate: Date;
 }
 
 const AddEventDialog: React.FC<AddEventDialogProps> = ({ 
   isOpen, 
   onClose, 
-  onAddEvent 
+  onAddEvent,
+  selectedDate
 }) => {
   const { toast } = useToast();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [date, setDate] = useState<Date | undefined>(selectedDate);
   const [time, setTime] = useState('');
   const [eventType, setEventType] = useState<EventType>('service');
+  
+  // When selectedDate changes, update the date state
+  React.useEffect(() => {
+    setDate(selectedDate);
+  }, [selectedDate]);
   
   const handleSubmit = () => {
     if (!title || !date || !time) {
@@ -51,7 +58,8 @@ const AddEventDialog: React.FC<AddEventDialogProps> = ({
       id: Math.random().toString(36).substring(2, 9),
       title,
       description,
-      date: eventDate.toISOString(),
+      date: eventDate,
+      time,
       type: eventType
     };
 

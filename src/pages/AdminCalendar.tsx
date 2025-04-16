@@ -63,12 +63,10 @@ const AdminCalendar: React.FC = () => {
     setIsAddEventDialogOpen(true);
   };
 
-  // Generate calendar days
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
   const calendarDays = eachDayOfInterval({ start: monthStart, end: monthEnd });
 
-  // Get events for a specific day
   const getEventsForDay = (day: Date) => {
     return events.filter(event => isSameDay(new Date(event.date), day));
   };
@@ -219,14 +217,14 @@ const AdminCalendar: React.FC = () => {
             </CardContent>
           </Card>
         </div>
+        
+        <AddEventDialog 
+          isOpen={isAddEventDialogOpen} 
+          onClose={() => setIsAddEventDialogOpen(false)}
+          onAddEvent={handleAddEvent}
+          selectedDate={selectedDate}
+        />
       </div>
-      
-      <AddEventDialog 
-        open={isAddEventDialogOpen} 
-        onOpenChange={setIsAddEventDialogOpen}
-        selectedDate={selectedDate}
-        onAddEvent={handleAddEvent}
-      />
     </MainLayout>
   );
 };

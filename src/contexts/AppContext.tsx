@@ -3,7 +3,7 @@ import React, { createContext, useState, useContext, ReactNode } from 'react';
 import { useTheme } from 'next-themes';
 import { useTranslation } from 'react-i18next';
 
-export interface AppContextProps {
+interface AppContextProps {
   isAuthenticated: boolean;
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
   theme: string;
