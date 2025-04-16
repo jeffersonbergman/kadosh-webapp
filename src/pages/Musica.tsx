@@ -14,6 +14,8 @@ import {
   Eye, Filter, SlidersHorizontal, Disc3
 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import { SongEditor } from '@/components/musica/SongEditor';
+import { SongList } from '@/components/musica/SongList';
 
 const Musica = () => {
   const { toast } = useToast();
@@ -21,6 +23,9 @@ const Musica = () => {
   const [scaleDialogOpen, setScaleDialogOpen] = useState(false);
   const [repertoireDialogOpen, setRepertoireDialogOpen] = useState(false);
   const [songDialogOpen, setSongDialogOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('escalas');
+  const [editingSong, setEditingSong] = useState<string | null>(null);
+  const [isAddingSong, setIsAddingSong] = useState(false);
 
   const handleNewMusician = (event: React.FormEvent) => {
     event.preventDefault();
@@ -56,6 +61,70 @@ const Musica = () => {
       title: "Música adicionada",
       description: "A nova música foi adicionada com sucesso.",
     });
+  };
+
+  // Dados de exemplo para as músicas
+  const sampleSongs = [
+    {
+      id: '1',
+      title: 'Grande é o Senhor',
+      artist: 'Adhemar de Campos',
+      key: 'E',
+      bpm: 80,
+      lastUpdated: '14/04/2025'
+    },
+    {
+      id: '2',
+      title: 'Oceanos',
+      artist: 'Hillsong',
+      key: 'D',
+      bpm: 72,
+      lastUpdated: '12/04/2025'
+    },
+    {
+      id: '3',
+      title: 'Tua Graça Me Basta',
+      artist: 'Davi Sacer',
+      key: 'G',
+      bpm: 76,
+      lastUpdated: '10/04/2025'
+    },
+    {
+      id: '4',
+      title: 'Lugar Secreto',
+      artist: 'Gabriela Rocha',
+      key: 'A',
+      bpm: 68,
+      lastUpdated: '08/04/2025'
+    }
+  ];
+
+  const handleEditSong = (songId: string) => {
+    setEditingSong(songId);
+    setActiveTab('repertorios');
+  };
+
+  const handleDeleteSong = (songId: string) => {
+    // Implementação real excluiria a música do banco de dados
+    toast({
+      title: "Música excluída",
+      description: "A música foi excluída com sucesso.",
+    });
+  };
+
+  const handleViewSong = (songId: string) => {
+    setEditingSong(songId);
+    setActiveTab('repertorios');
+  };
+
+  const handleAddNewSong = () => {
+    setIsAddingSong(true);
+    setActiveTab('repertorios');
+  };
+
+  const handleBackToSongList = () => {
+    setEditingSong(null);
+    setIsAddingSong(false);
   };
 
   return (
@@ -204,7 +273,7 @@ const Musica = () => {
           </div>
         </div>
 
-        <Tabs defaultValue="escalas" className="mb-6">
+        <Tabs defaultValue="escalas" value={activeTab} onValueChange={setActiveTab} className="mb-6">
           <TabsList className="grid w-full grid-cols-3 md:w-auto md:inline-flex">
             <TabsTrigger value="escalas">Escalas</TabsTrigger>
             <TabsTrigger value="repertorios">Repertórios</TabsTrigger>
@@ -449,370 +518,109 @@ const Musica = () => {
           
           <TabsContent value="repertorios" className="mt-4">
             <Card>
-              <CardHeader>
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                  <div>
-                    <CardTitle>Repertórios</CardTitle>
-                    <CardDescription>Gerenciamento das músicas para cada culto</CardDescription>
-                  </div>
-                  <div className="flex w-full md:w-auto space-x-2">
-                    <div className="relative flex-grow md:w-64">
-                      <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-                      <Input
-                        type="search"
-                        placeholder="Buscar música..."
-                        className="pl-8"
-                      />
-                    </div>
-                    <Dialog open={songDialogOpen} onOpenChange={setSongDialogOpen}>
-                      <DialogTrigger asChild>
-                        <Button variant="outline" size="sm">
+              {editingSong || isAddingSong ? (
+                <SongEditor 
+                  songId={editingSong || undefined} 
+                  onBack={handleBackToSongList} 
+                />
+              ) : (
+                <>
+                  <CardHeader>
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                      <div>
+                        <CardTitle>Repertórios</CardTitle>
+                        <CardDescription>Gerenciamento das músicas para cada culto</CardDescription>
+                      </div>
+                      <div className="flex w-full md:w-auto space-x-2">
+                        <Button variant="outline" size="sm" onClick={handleAddNewSong}>
                           <FileMusic size={16} className="mr-2" /> Nova Música
                         </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Adicionar Nova Música</DialogTitle>
-                          <DialogDescription>
-                            Cadastre uma nova música para o repertório.
-                          </DialogDescription>
-                        </DialogHeader>
-                        <form onSubmit={handleNewSong}>
-                          <div className="grid gap-4 py-4">
-                            <div className="grid grid-cols-4 items-center gap-4">
-                              <Label htmlFor="song-title" className="text-right">
-                                Título
-                              </Label>
-                              <Input id="song-title" className="col-span-3" required />
-                            </div>
-                            <div className="grid grid-cols-4 items-center gap-4">
-                              <Label htmlFor="song-artist" className="text-right">
-                                Artista
-                              </Label>
-                              <Input id="song-artist" className="col-span-3" required />
-                            </div>
-                            <div className="grid grid-cols-4 items-center gap-4">
-                              <Label htmlFor="song-tone" className="text-right">
-                                Tom
-                              </Label>
-                              <Select>
-                                <SelectTrigger className="col-span-3">
-                                  <SelectValue placeholder="Selecione o tom" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="C">C (Dó)</SelectItem>
-                                  <SelectItem value="D">D (Ré)</SelectItem>
-                                  <SelectItem value="E">E (Mi)</SelectItem>
-                                  <SelectItem value="F">F (Fá)</SelectItem>
-                                  <SelectItem value="G">G (Sol)</SelectItem>
-                                  <SelectItem value="A">A (Lá)</SelectItem>
-                                  <SelectItem value="B">B (Si)</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                            <div className="grid grid-cols-4 items-center gap-4">
-                              <Label htmlFor="song-bpm" className="text-right">
-                                BPM
-                              </Label>
-                              <Input id="song-bpm" type="number" className="col-span-3" />
-                            </div>
-                            <div className="grid grid-cols-4 items-center gap-4">
-                              <Label htmlFor="song-lyrics" className="text-right">
-                                Letra/Cifra
-                              </Label>
-                              <Input id="song-lyrics" type="file" className="col-span-3" />
-                            </div>
-                          </div>
-                          <DialogFooter>
-                            <Button type="submit">Adicionar Música</Button>
-                          </DialogFooter>
-                        </form>
-                      </DialogContent>
-                    </Dialog>
-                    <Dialog open={repertoireDialogOpen} onOpenChange={setRepertoireDialogOpen}>
-                      <DialogTrigger asChild>
-                        <Button size="sm">
-                          <ListMusic size={16} className="mr-2" /> Novo Repertório
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Criar Novo Repertório</DialogTitle>
-                          <DialogDescription>
-                            Defina as músicas para o novo repertório.
-                          </DialogDescription>
-                        </DialogHeader>
-                        <form onSubmit={handleNewRepertoire}>
-                          <div className="grid gap-4 py-4">
-                            <div className="grid grid-cols-4 items-center gap-4">
-                              <Label htmlFor="rep-name" className="text-right">
-                                Nome
-                              </Label>
-                              <Input id="rep-name" className="col-span-3" placeholder="Ex: Culto de Domingo - Manhã (21/04)" required />
-                            </div>
-                            <div className="grid grid-cols-4 items-center gap-4">
-                              <Label htmlFor="rep-date" className="text-right">
-                                Data
-                              </Label>
-                              <Input id="rep-date" type="date" className="col-span-3" required />
-                            </div>
-                            <div className="grid grid-cols-4 items-center gap-4">
-                              <Label htmlFor="rep-songs" className="text-right">
-                                Músicas
-                              </Label>
-                              <div className="col-span-3 space-y-2">
-                                <div className="flex items-center justify-between border p-2 rounded-md">
-                                  <span>Grande é o Senhor (Adhemar de Campos)</span>
-                                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                    <Trash2 size={16} />
-                                  </Button>
+                        <Dialog open={repertoireDialogOpen} onOpenChange={setRepertoireDialogOpen}>
+                          <DialogTrigger asChild>
+                            <Button size="sm">
+                              <ListMusic size={16} className="mr-2" /> Novo Repertório
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent>
+                            <DialogHeader>
+                              <DialogTitle>Criar Novo Repertório</DialogTitle>
+                              <DialogDescription>
+                                Defina as músicas para o novo repertório.
+                              </DialogDescription>
+                            </DialogHeader>
+                            <form onSubmit={handleNewRepertoire}>
+                              <div className="grid gap-4 py-4">
+                                <div className="grid grid-cols-4 items-center gap-4">
+                                  <Label htmlFor="rep-name" className="text-right">
+                                    Nome
+                                  </Label>
+                                  <Input id="rep-name" className="col-span-3" placeholder="Ex: Culto de Domingo - Manhã (21/04)" required />
                                 </div>
-                                <Button variant="outline" size="sm" className="w-full">
-                                  <Plus size={16} className="mr-2" /> Adicionar Música
-                                </Button>
+                                <div className="grid grid-cols-4 items-center gap-4">
+                                  <Label htmlFor="rep-date" className="text-right">
+                                    Data
+                                  </Label>
+                                  <Input id="rep-date" type="date" className="col-span-3" required />
+                                </div>
+                                <div className="grid grid-cols-4 items-center gap-4">
+                                  <Label htmlFor="rep-songs" className="text-right">
+                                    Músicas
+                                  </Label>
+                                  <div className="col-span-3 space-y-2">
+                                    <div className="flex items-center justify-between border p-2 rounded-md">
+                                      <span>Grande é o Senhor (Adhemar de Campos)</span>
+                                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                        <Trash2 size={16} />
+                                      </Button>
+                                    </div>
+                                    <Button variant="outline" size="sm" className="w-full">
+                                      <Plus size={16} className="mr-2" /> Adicionar Música
+                                    </Button>
+                                  </div>
+                                </div>
+                                <div className="grid grid-cols-4 items-center gap-4">
+                                  <Label htmlFor="rep-notes" className="text-right">
+                                    Observações
+                                  </Label>
+                                  <Input id="rep-notes" className="col-span-3" placeholder="Notas adicionais para a equipe" />
+                                </div>
                               </div>
-                            </div>
-                            <div className="grid grid-cols-4 items-center gap-4">
-                              <Label htmlFor="rep-notes" className="text-right">
-                                Observações
-                              </Label>
-                              <Input id="rep-notes" className="col-span-3" placeholder="Notas adicionais para a equipe" />
-                            </div>
-                          </div>
-                          <DialogFooter>
-                            <Button type="submit">Criar Repertório</Button>
-                          </DialogFooter>
-                        </form>
-                      </DialogContent>
-                    </Dialog>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="p-4 border rounded-md hover:bg-gray-50 transition-colors duration-200">
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-                      <div className="flex items-center">
-                        <div className="bg-church-light p-3 rounded-lg text-church-primary mr-3">
-                          <Music size={18} />
-                        </div>
-                        <div>
-                          <h3 className="font-medium">Culto de Domingo - Manhã (21/04)</h3>
-                          <p className="text-xs text-gray-500 mt-1">
-                            8 músicas • Atualizado em 14/04/2025
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center mt-3 md:mt-0">
-                        <div className="flex space-x-1">
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                            <Edit size={16} />
-                          </Button>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                            <Trash2 size={16} />
-                          </Button>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                            <Download size={16} />
-                          </Button>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                            <Share size={16} />
-                          </Button>
-                          <Button variant="ghost" size="sm" className="flex items-center">
-                            <span>Ver Repertório</span>
-                            <ChevronRight size={16} className="ml-1" />
-                          </Button>
-                        </div>
+                              <DialogFooter>
+                                <Button type="submit">Criar Repertório</Button>
+                              </DialogFooter>
+                            </form>
+                          </DialogContent>
+                        </Dialog>
                       </div>
                     </div>
-                    <div className="mt-3 md:pl-12">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                        <div className="flex items-center">
-                          <FileMusic size={16} className="mr-2 text-church-primary" />
-                          <span className="text-sm">Grande é o Senhor (Adhemar de Campos)</span>
-                        </div>
-                        <div className="flex items-center">
-                          <FileMusic size={16} className="mr-2 text-church-primary" />
-                          <span className="text-sm">Oceanos (Hillsong)</span>
-                        </div>
-                        <div className="flex items-center">
-                          <FileMusic size={16} className="mr-2 text-church-primary" />
-                          <span className="text-sm">Tua Graça Me Basta (Davi Sacer)</span>
-                        </div>
-                        <div className="flex items-center">
-                          <span className="text-sm text-church-primary cursor-pointer hover:underline">
-                            +5 músicas
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="p-4 border rounded-md hover:bg-gray-50 transition-colors duration-200">
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-                      <div className="flex items-center">
-                        <div className="bg-church-light p-3 rounded-lg text-church-primary mr-3">
-                          <Music size={18} />
-                        </div>
-                        <div>
-                          <h3 className="font-medium">Culto de Domingo - Noite (21/04)</h3>
-                          <p className="text-xs text-gray-500 mt-1">
-                            7 músicas • Atualizado em 14/04/2025
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center mt-3 md:mt-0">
-                        <div className="flex space-x-1">
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                            <Edit size={16} />
-                          </Button>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                            <Trash2 size={16} />
-                          </Button>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                            <Share size={16} />
-                          </Button>
-                          <Button variant="ghost" size="sm" className="flex items-center">
-                            <span>Detalhes</span>
-                            <ChevronRight size={16} className="ml-1" />
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="mt-3 md:pl-12">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                        <div className="flex items-center">
-                          <FileMusic size={16} className="mr-2 text-church-primary" />
-                          <span className="text-sm">Deus é Deus (Delino Marçal)</span>
-                        </div>
-                        <div className="flex items-center">
-                          <FileMusic size={16} className="mr-2 text-church-primary" />
-                          <span className="text-sm">Santo Espírito (Laura Souguellis)</span>
-                        </div>
-                        <div className="flex items-center">
-                          <FileMusic size={16} className="mr-2 text-church-primary" />
-                          <span className="text-sm">Lugar Secreto (Gabriela Rocha)</span>
-                        </div>
-                        <div className="flex items-center">
-                          <span className="text-sm text-church-primary cursor-pointer hover:underline">
-                            +4 músicas
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="p-4 border rounded-md hover:bg-gray-50 transition-colors duration-200">
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-                      <div className="flex items-center">
-                        <div className="bg-church-light p-3 rounded-lg text-church-primary mr-3">
-                          <Music size={18} />
-                        </div>
-                        <div>
-                          <h3 className="font-medium">Culto de Quarta-feira (24/04)</h3>
-                          <p className="text-xs text-gray-500 mt-1">
-                            5 músicas • Atualizado em 13/04/2025
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center mt-3 md:mt-0">
-                        <div className="flex space-x-1">
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                            <Edit size={16} />
-                          </Button>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                            <Trash2 size={16} />
-                          </Button>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                            <Share size={16} />
-                          </Button>
-                          <Button variant="ghost" size="sm" className="flex items-center">
-                            <span>Detalhes</span>
-                            <ChevronRight size={16} className="ml-1" />
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="mt-3 md:pl-12">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                        <div className="flex items-center">
-                          <FileMusic size={16} className="mr-2 text-church-primary" />
-                          <span className="text-sm">Nada Além do Sangue (Fernandinho)</span>
-                        </div>
-                        <div className="flex items-center">
-                          <FileMusic size={16} className="mr-2 text-church-primary" />
-                          <span className="text-sm">Deus Proverá (Adhemar de Campos)</span>
-                        </div>
-                        <div className="flex items-center">
-                          <FileMusic size={16} className="mr-2 text-church-primary" />
-                          <span className="text-sm">Enquanto Eu Chorava (Gabriel Guedes)</span>
-                        </div>
-                        <div className="flex items-center">
-                          <span className="text-sm text-church-primary cursor-pointer hover:underline">
-                            +2 músicas
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-          
-          <TabsContent value="musicos" className="mt-4">
-            <Card>
-              <CardHeader>
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                  <div>
-                    <CardTitle>Músicos Cadastrados</CardTitle>
-                    <CardDescription>Gerenciamento da equipe de louvor</CardDescription>
-                  </div>
-                  <div className="flex space-x-2">
-                    <div className="relative flex-grow md:w-64 mr-2">
-                      <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-                      <Input
-                        type="search"
-                        placeholder="Buscar músico..."
-                        className="pl-8"
+                  </CardHeader>
+                  <CardContent>
+                    <div className="mb-6">
+                      <SongList 
+                        songs={sampleSongs}
+                        onEdit={handleEditSong}
+                        onDelete={handleDeleteSong}
+                        onView={handleViewSong}
+                        onNew={handleAddNewSong}
                       />
                     </div>
-                    <Button variant="outline" size="sm">
-                      <SlidersHorizontal size={16} className="mr-2" /> Filtrar
-                    </Button>
-                    <Dialog open={musicianDialogOpen} onOpenChange={setMusicianDialogOpen}>
-                      <DialogTrigger asChild>
-                        <Button size="sm">
-                          <UserPlus size={16} className="mr-2" /> Novo Músico
-                        </Button>
-                      </DialogTrigger>
-                    </Dialog>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="rounded-md border">
-                  <div className="relative w-full overflow-auto">
-                    <table className="w-full caption-bottom text-sm">
-                      <thead className="[&_tr]:border-b">
-                        <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-                          <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Nome</th>
-                          <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Instrumento</th>
-                          <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Contato</th>
-                          <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Status</th>
-                          <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Ações</th>
-                        </tr>
-                      </thead>
-                      <tbody className="[&_tr:last-child]:border-0">
-                        <tr className="border-b transition-colors hover:bg-muted/50">
-                          <td className="p-4 align-middle font-medium">João Silva</td>
-                          <td className="p-4 align-middle">Bateria</td>
-                          <td className="p-4 align-middle">(11) 98765-4321</td>
-                          <td className="p-4 align-middle">
-                            <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
-                              Ativo
-                            </span>
-                          </td>
-                          <td className="p-4 align-middle">
+                    
+                    <div className="space-y-4">
+                      <h3 className="font-medium text-lg">Repertórios Criados</h3>
+                      <div className="p-4 border rounded-md hover:bg-gray-50 transition-colors duration-200">
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+                          <div className="flex items-center">
+                            <div className="bg-church-light p-3 rounded-lg text-church-primary mr-3">
+                              <Music size={18} />
+                            </div>
+                            <div>
+                              <h3 className="font-medium">Culto de Domingo - Manhã (21/04)</h3>
+                              <p className="text-xs text-gray-500 mt-1">
+                                8 músicas • Atualizado em 14/04/2025
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center mt-3 md:mt-0">
                             <div className="flex space-x-1">
                               <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                                 <Edit size={16} />
@@ -820,20 +628,56 @@ const Musica = () => {
                               <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                                 <Trash2 size={16} />
                               </Button>
-                              <Button variant="ghost" size="sm">Detalhes</Button>
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                <Download size={16} />
+                              </Button>
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                <Share size={16} />
+                              </Button>
+                              <Button variant="ghost" size="sm" className="flex items-center">
+                                <span>Ver Repertório</span>
+                                <ChevronRight size={16} className="ml-1" />
+                              </Button>
                             </div>
-                          </td>
-                        </tr>
-                        <tr className="border-b transition-colors hover:bg-muted/50">
-                          <td className="p-4 align-middle font-medium">Maria Oliveira</td>
-                          <td className="p-4 align-middle">Vocal</td>
-                          <td className="p-4 align-middle">(11) 98765-1234</td>
-                          <td className="p-4 align-middle">
-                            <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
-                              Ativo
-                            </span>
-                          </td>
-                          <td className="p-4 align-middle">
+                          </div>
+                        </div>
+                        <div className="mt-3 md:pl-12">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <div className="flex items-center">
+                              <FileMusic size={16} className="mr-2 text-church-primary" />
+                              <span className="text-sm">Grande é o Senhor (Adhemar de Campos)</span>
+                            </div>
+                            <div className="flex items-center">
+                              <FileMusic size={16} className="mr-2 text-church-primary" />
+                              <span className="text-sm">Oceanos (Hillsong)</span>
+                            </div>
+                            <div className="flex items-center">
+                              <FileMusic size={16} className="mr-2 text-church-primary" />
+                              <span className="text-sm">Tua Graça Me Basta (Davi Sacer)</span>
+                            </div>
+                            <div className="flex items-center">
+                              <span className="text-sm text-church-primary cursor-pointer hover:underline">
+                                +5 músicas
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="p-4 border rounded-md hover:bg-gray-50 transition-colors duration-200">
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+                          <div className="flex items-center">
+                            <div className="bg-church-light p-3 rounded-lg text-church-primary mr-3">
+                              <Music size={18} />
+                            </div>
+                            <div>
+                              <h3 className="font-medium">Culto de Domingo - Noite (21/04)</h3>
+                              <p className="text-xs text-gray-500 mt-1">
+                                7 músicas • Atualizado em 14/04/2025
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center mt-3 md:mt-0">
                             <div className="flex space-x-1">
                               <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                                 <Edit size={16} />
@@ -841,105 +685,45 @@ const Musica = () => {
                               <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                                 <Trash2 size={16} />
                               </Button>
-                              <Button variant="ghost" size="sm">Detalhes</Button>
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                <Share size={16} />
+                              </Button>
+                              <Button variant="ghost" size="sm" className="flex items-center">
+                                <span>Detalhes</span>
+                                <ChevronRight size={16} className="ml-1" />
+                              </Button>
                             </div>
-                          </td>
-                        </tr>
-                        <tr className="border-b transition-colors hover:bg-muted/50">
-                          <td className="p-4 align-middle font-medium">Pedro Santos</td>
-                          <td className="p-4 align-middle">Violão</td>
-                          <td className="p-4 align-middle">(11) 97654-3210</td>
-                          <td className="p-4 align-middle">
-                            <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
-                              Ativo
-                            </span>
-                          </td>
-                          <td className="p-4 align-middle">
-                            <div className="flex space-x-1">
-                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                <Edit size={16} />
-                              </Button>
-                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                <Trash2 size={16} />
-                              </Button>
-                              <Button variant="ghost" size="sm">Detalhes</Button>
+                          </div>
+                        </div>
+                        <div className="mt-3 md:pl-12">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <div className="flex items-center">
+                              <FileMusic size={16} className="mr-2 text-church-primary" />
+                              <span className="text-sm">Deus é Deus (Delino Marçal)</span>
                             </div>
-                          </td>
-                        </tr>
-                        <tr className="border-b transition-colors hover:bg-muted/50">
-                          <td className="p-4 align-middle font-medium">Ana Costa</td>
-                          <td className="p-4 align-middle">Violino</td>
-                          <td className="p-4 align-middle">(11) 96543-2109</td>
-                          <td className="p-4 align-middle">
-                            <span className="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">
-                              Ocasional
-                            </span>
-                          </td>
-                          <td className="p-4 align-middle">
-                            <div className="flex space-x-1">
-                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                <Edit size={16} />
-                              </Button>
-                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                <Trash2 size={16} />
-                              </Button>
-                              <Button variant="ghost" size="sm">Detalhes</Button>
+                            <div className="flex items-center">
+                              <FileMusic size={16} className="mr-2 text-church-primary" />
+                              <span className="text-sm">Santo Espírito (Laura Souguellis)</span>
                             </div>
-                          </td>
-                        </tr>
-                        <tr className="border-b transition-colors hover:bg-muted/50">
-                          <td className="p-4 align-middle font-medium">Lucas Ferreira</td>
-                          <td className="p-4 align-middle">Guitarra</td>
-                          <td className="p-4 align-middle">(11) 95432-1098</td>
-                          <td className="p-4 align-middle">
-                            <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
-                              Ativo
-                            </span>
-                          </td>
-                          <td className="p-4 align-middle">
-                            <div className="flex space-x-1">
-                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                <Edit size={16} />
-                              </Button>
-                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                <Trash2 size={16} />
-                              </Button>
-                              <Button variant="ghost" size="sm">Detalhes</Button>
+                            <div className="flex items-center">
+                              <FileMusic size={16} className="mr-2 text-church-primary" />
+                              <span className="text-sm">Lugar Secreto (Gabriela Rocha)</span>
                             </div>
-                          </td>
-                        </tr>
-                        <tr className="transition-colors hover:bg-muted/50">
-                          <td className="p-4 align-middle font-medium">Julia Almeida</td>
-                          <td className="p-4 align-middle">Vocal</td>
-                          <td className="p-4 align-middle">(11) 94321-0987</td>
-                          <td className="p-4 align-middle">
-                            <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
-                              Ativo
-                            </span>
-                          </td>
-                          <td className="p-4 align-middle">
-                            <div className="flex space-x-1">
-                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                <Edit size={16} />
-                              </Button>
-                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                <Trash2 size={16} />
-                              </Button>
-                              <Button variant="ghost" size="sm">Detalhes</Button>
+                            <div className="flex items-center">
+                              <span className="text-sm text-church-primary cursor-pointer hover:underline">
+                                +4 músicas
+                              </span>
                             </div>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </div>
-    </MainLayout>
-  );
-};
-
-export default Musica;
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="p-4 border rounded-md hover:bg-gray-50 transition-colors duration-200">
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+                          <div className="flex items-center">
+                            <div className="bg-church-light p-3 rounded-lg text-church-primary mr-3">
+                              <Music size={18} />
+                            </div>
+                            <div>
+                              <h3 className="font-medium">Culto de Quarta-feira (24/04)</h3>
+                              <p className="text-xs text-gray-50
