@@ -13,7 +13,8 @@ interface AppContextProps {
   login?: (username: string, password: string) => Promise<boolean>;
 }
 
-export const AppContext = createContext<AppContextProps>({
+// Create the context with a default value
+const defaultContextValue: AppContextProps = {
   isAuthenticated: false,
   setIsAuthenticated: () => {},
   theme: 'light',
@@ -21,7 +22,9 @@ export const AppContext = createContext<AppContextProps>({
   language: 'pt',
   setLanguage: () => {},
   login: async () => false
-});
+};
+
+export const AppContext = createContext<AppContextProps>(defaultContextValue);
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
