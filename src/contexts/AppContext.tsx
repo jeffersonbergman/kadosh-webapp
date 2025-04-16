@@ -14,15 +14,16 @@ interface AppContextProps {
 }
 
 // Create the context with a default value
-const defaultContextValue: AppContextProps = {
+// Using type assertion to avoid deep instantiation issues
+const defaultContextValue = {
   isAuthenticated: false,
-  setIsAuthenticated: () => {},
+  setIsAuthenticated: (() => {}) as React.Dispatch<React.SetStateAction<boolean>>,
   theme: 'light',
-  setTheme: () => {},
+  setTheme: (() => {}) as (theme: string) => void,
   language: 'pt',
-  setLanguage: () => {},
-  login: async () => false
-};
+  setLanguage: (() => {}) as (language: string) => void,
+  login: (async () => false) as (username: string, password: string) => Promise<boolean>
+} as AppContextProps;
 
 export const AppContext = createContext<AppContextProps>(defaultContextValue);
 
