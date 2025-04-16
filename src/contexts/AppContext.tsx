@@ -13,8 +13,8 @@ interface AppContextProps {
   login?: (username: string, password: string) => Promise<boolean>;
 }
 
-// Create the context with a default value
-// We're using a null assertion here to avoid circular type references
+// Create the context with a default value that's null
+// This avoids deep type instantiation issues
 export const AppContext = createContext<AppContextProps | null>(null);
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
