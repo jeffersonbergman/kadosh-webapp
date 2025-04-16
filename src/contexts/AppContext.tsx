@@ -14,18 +14,8 @@ interface AppContextProps {
 }
 
 // Create the context with a default value
-// Using type assertion to avoid deep instantiation issues
-const defaultContextValue = {
-  isAuthenticated: false,
-  setIsAuthenticated: (() => {}) as React.Dispatch<React.SetStateAction<boolean>>,
-  theme: 'light',
-  setTheme: (() => {}) as (theme: string) => void,
-  language: 'pt',
-  setLanguage: (() => {}) as (language: string) => void,
-  login: (async () => false) as (username: string, password: string) => Promise<boolean>
-} as AppContextProps;
-
-export const AppContext = createContext<AppContextProps>(defaultContextValue);
+// We're using a null assertion here to avoid circular type references
+export const AppContext = createContext<AppContextProps | null>(null);
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -62,4 +52,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   );
 };
 
-export const useApp = () => useContext(AppContext);
+// Custom hook that handles the null check
+export const useApp = () => {
+  const context = useContext(AppContext);
+  if (context === null) {
+    throw new Error('useApp must be used within an AppProvider');
+  }
+  return context;
+};
