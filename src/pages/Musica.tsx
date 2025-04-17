@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -151,7 +152,6 @@ const Musica = () => {
                 </DialogHeader>
                 <form onSubmit={handleNewMusician}>
                   <div className="grid gap-4 py-4">
-                    
                     <div className="grid grid-cols-4 items-center gap-4">
                       <Label htmlFor="name" className="text-right">
                         Nome
@@ -223,7 +223,6 @@ const Musica = () => {
                   </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleNewScale}>
-                  
                   <div className="grid gap-4 py-4">
                     <div className="grid grid-cols-4 items-center gap-4">
                       <Label htmlFor="event-name" className="text-right">
@@ -308,9 +307,7 @@ const Musica = () => {
                 </div>
               </CardHeader>
               <CardContent>
-                
                 <div className="space-y-4">
-                  
                   <div className="p-4 border rounded-md hover:bg-gray-50 transition-colors duration-200">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
@@ -363,7 +360,6 @@ const Musica = () => {
                     </div>
                   </div>
                   
-                  
                   <div className="p-4 border rounded-md hover:bg-gray-50 transition-colors duration-200">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
@@ -415,7 +411,6 @@ const Musica = () => {
                       </div>
                     </div>
                   </div>
-                  
                   
                   <div className="p-4 border rounded-md hover:bg-gray-50 transition-colors duration-200">
                     <div className="flex items-center justify-between">
@@ -555,7 +550,6 @@ const Musica = () => {
                               </DialogDescription>
                             </DialogHeader>
                             <form onSubmit={handleNewRepertoire}>
-                              
                               <div className="grid gap-4 py-4">
                                 <div className="grid grid-cols-4 items-center gap-4">
                                   <Label htmlFor="rep-name" className="text-right">
@@ -733,3 +727,175 @@ const Musica = () => {
                             </div>
                             <div>
                               <h3 className="font-medium">Culto de Quarta-feira (24/04)</h3>
+                              <p className="text-xs text-gray-500 mt-1">
+                                5 músicas • Atualizado em 13/04/2025
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center mt-3 md:mt-0">
+                            <div className="flex space-x-1">
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                <Edit size={16} />
+                              </Button>
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                <Trash2 size={16} />
+                              </Button>
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                <Share size={16} />
+                              </Button>
+                              <Button variant="ghost" size="sm" className="flex items-center">
+                                <span>Detalhes</span>
+                                <ChevronRight size={16} className="ml-1" />
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="mt-3 md:pl-12">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <div className="flex items-center">
+                              <FileMusic size={16} className="mr-2 text-church-primary" />
+                              <span className="text-sm">Alfa e Ômega (Marine Friesen)</span>
+                            </div>
+                            <div className="flex items-center">
+                              <FileMusic size={16} className="mr-2 text-church-primary" />
+                              <span className="text-sm">Só Tu És Santo (Aline Barros)</span>
+                            </div>
+                            <div className="flex items-center">
+                              <span className="text-sm text-church-primary cursor-pointer hover:underline">
+                                +3 músicas
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </>
+              )}
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="musicos" className="mt-4">
+            <Card>
+              <CardHeader>
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                  <div>
+                    <CardTitle>Equipe de Música</CardTitle>
+                    <CardDescription>Gerenciamento dos integrantes da equipe de louvor</CardDescription>
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button variant="outline" size="sm" className="hidden md:flex">
+                      <Filter size={16} className="mr-2" /> Filtrar
+                    </Button>
+                    <Dialog open={musicianDialogOpen} onOpenChange={setMusicianDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button size="sm">
+                          <UserPlus size={16} className="mr-2" /> Novo Músico
+                        </Button>
+                      </DialogTrigger>
+                    </Dialog>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="p-4 border rounded-md hover:bg-gray-50 transition-colors duration-200">
+                    <div className="flex flex-col items-center">
+                      <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mb-2">
+                        <Mic size={24} className="text-gray-600" />
+                      </div>
+                      <h3 className="font-medium text-lg">Maria Silva</h3>
+                      <p className="text-sm text-gray-500">Vocal</p>
+                      <div className="mt-2 flex space-x-1">
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <Edit size={16} />
+                        </Button>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <Trash2 size={16} />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="p-4 border rounded-md hover:bg-gray-50 transition-colors duration-200">
+                    <div className="flex flex-col items-center">
+                      <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mb-2">
+                        <Music size={24} className="text-gray-600" />
+                      </div>
+                      <h3 className="font-medium text-lg">João Santos</h3>
+                      <p className="text-sm text-gray-500">Bateria</p>
+                      <div className="mt-2 flex space-x-1">
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <Edit size={16} />
+                        </Button>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <Trash2 size={16} />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="p-4 border rounded-md hover:bg-gray-50 transition-colors duration-200">
+                    <div className="flex flex-col items-center">
+                      <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mb-2">
+                        <Music size={24} className="text-gray-600" />
+                      </div>
+                      <h3 className="font-medium text-lg">Pedro Oliveira</h3>
+                      <p className="text-sm text-gray-500">Violão</p>
+                      <div className="mt-2 flex space-x-1">
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <Edit size={16} />
+                        </Button>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <Trash2 size={16} />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="p-4 border rounded-md hover:bg-gray-50 transition-colors duration-200">
+                    <div className="flex flex-col items-center">
+                      <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mb-2">
+                        <Music size={24} className="text-gray-600" />
+                      </div>
+                      <h3 className="font-medium text-lg">Ana Costa</h3>
+                      <p className="text-sm text-gray-500">Vocal</p>
+                      <div className="mt-2 flex space-x-1">
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <Edit size={16} />
+                        </Button>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <Trash2 size={16} />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="p-4 border rounded-md hover:bg-gray-50 transition-colors duration-200">
+                    <div className="flex flex-col items-center">
+                      <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mb-2">
+                        <Music size={24} className="text-gray-600" />
+                      </div>
+                      <h3 className="font-medium text-lg">Lucas Ferreira</h3>
+                      <p className="text-sm text-gray-500">Guitarra</p>
+                      <div className="mt-2 flex space-x-1">
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <Edit size={16} />
+                        </Button>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <Trash2 size={16} />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </MainLayout>
+  );
+};
+
+export default Musica;
