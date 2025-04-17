@@ -151,6 +151,7 @@ const Musica = () => {
                 </DialogHeader>
                 <form onSubmit={handleNewMusician}>
                   <div className="grid gap-4 py-4">
+                    
                     <div className="grid grid-cols-4 items-center gap-4">
                       <Label htmlFor="name" className="text-right">
                         Nome
@@ -222,6 +223,7 @@ const Musica = () => {
                   </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleNewScale}>
+                  
                   <div className="grid gap-4 py-4">
                     <div className="grid grid-cols-4 items-center gap-4">
                       <Label htmlFor="event-name" className="text-right">
@@ -306,7 +308,9 @@ const Musica = () => {
                 </div>
               </CardHeader>
               <CardContent>
+                
                 <div className="space-y-4">
+                  
                   <div className="p-4 border rounded-md hover:bg-gray-50 transition-colors duration-200">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
@@ -359,6 +363,7 @@ const Musica = () => {
                     </div>
                   </div>
                   
+                  
                   <div className="p-4 border rounded-md hover:bg-gray-50 transition-colors duration-200">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
@@ -410,6 +415,7 @@ const Musica = () => {
                       </div>
                     </div>
                   </div>
+                  
                   
                   <div className="p-4 border rounded-md hover:bg-gray-50 transition-colors duration-200">
                     <div className="flex items-center justify-between">
@@ -549,6 +555,7 @@ const Musica = () => {
                               </DialogDescription>
                             </DialogHeader>
                             <form onSubmit={handleNewRepertoire}>
+                              
                               <div className="grid gap-4 py-4">
                                 <div className="grid grid-cols-4 items-center gap-4">
                                   <Label htmlFor="rep-name" className="text-right">
@@ -726,4 +733,3 @@ const Musica = () => {
                             </div>
                             <div>
                               <h3 className="font-medium">Culto de Quarta-feira (24/04)</h3>
-                              <p className="text-xs text-gray-50
