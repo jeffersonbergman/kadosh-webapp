@@ -64,6 +64,14 @@ export const SongList: React.FC<SongListProps> = ({
     }
   };
   
+  const handleView = (id: string) => {
+    onView(id);
+    toast({
+      title: "Visualizando música",
+      description: "Carregando detalhes da música...",
+    });
+  };
+  
   return (
     <div className="space-y-4">
       <div className="flex flex-col md:flex-row gap-3 justify-between">
@@ -129,17 +137,40 @@ export const SongList: React.FC<SongListProps> = ({
                   </div>
                 </div>
                 <div className="flex space-x-1">
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => onView(song.id)}>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-8 w-8 p-0" 
+                    onClick={() => handleView(song.id)}
+                    title="Visualizar"
+                  >
                     <Eye size={16} />
                   </Button>
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => onEdit(song.id)}>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-8 w-8 p-0" 
+                    onClick={() => onEdit(song.id)}
+                    title="Editar"
+                  >
                     <Edit size={16} />
                   </Button>
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => handleDelete(song.id)}>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-8 w-8 p-0" 
+                    onClick={() => handleDelete(song.id)}
+                    title="Excluir"
+                  >
                     <Trash2 size={16} />
                   </Button>
-                  <Button variant="ghost" size="sm" className="flex items-center" onClick={() => onEdit(song.id)}>
-                    <span>Editar</span>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="flex items-center"
+                    onClick={() => handleView(song.id)}
+                  >
+                    <span>Ver Música</span>
                     <ChevronRight size={16} className="ml-1" />
                   </Button>
                 </div>
