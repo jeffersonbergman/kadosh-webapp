@@ -106,7 +106,7 @@ const NewMember = () => {
                 
                 <div className="space-y-2">
                   <Label htmlFor="department">Departamento</Label>
-                  <Select defaultValue="">
+                  <Select defaultValue="none">
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione o departamento" />
                     </SelectTrigger>
@@ -116,6 +116,7 @@ const NewMember = () => {
                       <SelectItem value="youth">Jovens</SelectItem>
                       <SelectItem value="missions">Missões</SelectItem>
                       <SelectItem value="education">Educação</SelectItem>
+                      <SelectItem value="none">Nenhum</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

@@ -92,7 +92,7 @@ export const SongList: React.FC<SongListProps> = ({
               <SelectValue placeholder="Filtrar por Tom" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todos os Tons</SelectItem>
+              <SelectItem value="all_keys">Todos os Tons</SelectItem>
               <SelectItem value="C">C (Dó)</SelectItem>
               <SelectItem value="D">D (Ré)</SelectItem>
               <SelectItem value="E">E (Mi)</SelectItem>

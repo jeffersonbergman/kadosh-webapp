@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MainLayout from '@/components/layout/MainLayout';
@@ -94,6 +93,7 @@ const Communications = () => {
   };
 
   return (
+    
     <MainLayout>
       <div className="container mx-auto py-6 animate-fade-in">
         <div className="flex justify-between items-center mb-6">
