@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -61,7 +60,7 @@ export const SongEditor: React.FC<SongEditorProps> = ({ songId, onBack }) => {
 
   return (
     <div className="animate-fade-in space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <Button 
           variant="ghost" 
           size="sm"
@@ -71,7 +70,7 @@ export const SongEditor: React.FC<SongEditorProps> = ({ songId, onBack }) => {
           <ChevronLeft className="mr-1" size={16} />
           <span>Voltar para Repertórios</span>
         </Button>
-        <Button onClick={handleSave} className="flex items-center">
+        <Button onClick={handleSave} className="flex items-center w-full sm:w-auto">
           <Save className="mr-2" size={16} />
           <span>Salvar</span>
         </Button>
@@ -79,19 +78,19 @@ export const SongEditor: React.FC<SongEditorProps> = ({ songId, onBack }) => {
 
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
               <CardTitle>{songId ? 'Editar Música' : 'Nova Música'}</CardTitle>
               <CardDescription>
                 {songId ? 'Edite os detalhes da música e sua partitura' : 'Preencha os detalhes da nova música'}
               </CardDescription>
             </div>
-            <div className="flex space-x-2">
-              <Button variant="outline" size="sm">
+            <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+              <Button variant="outline" size="sm" className="flex-1 sm:flex-initial">
                 <Share size={16} className="mr-2" />
                 <span>Compartilhar</span>
               </Button>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" className="flex-1 sm:flex-initial">
                 <Download size={16} className="mr-2" />
                 <span>Exportar PDF</span>
               </Button>
@@ -148,7 +147,7 @@ export const SongEditor: React.FC<SongEditorProps> = ({ songId, onBack }) => {
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="w-full grid grid-cols-2">
               <TabsTrigger value="lyrics" className="flex items-center">
                 <FileText size={16} className="mr-2" />
                 <span>Letra e Cifra</span>
@@ -215,9 +214,11 @@ export const SongEditor: React.FC<SongEditorProps> = ({ songId, onBack }) => {
             </TabsContent>
           </Tabs>
         </CardContent>
-        <CardFooter className="flex justify-between">
-          <Button variant="outline" size="sm" onClick={onBack}>Cancelar</Button>
-          <Button size="sm" onClick={handleSave}>
+        <CardFooter className="flex flex-col sm:flex-row gap-2 sm:justify-between">
+          <Button variant="outline" size="sm" onClick={onBack} className="w-full sm:w-auto">
+            Cancelar
+          </Button>
+          <Button size="sm" onClick={handleSave} className="w-full sm:w-auto">
             <Save size={16} className="mr-2" />
             Salvar Música
           </Button>

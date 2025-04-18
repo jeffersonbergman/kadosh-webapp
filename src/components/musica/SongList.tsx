@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { 
@@ -9,7 +8,8 @@ import {
   Eye, 
   Music, 
   Search,
-  FileText
+  FileText,
+  Plus 
 } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -86,9 +86,9 @@ export const SongList: React.FC<SongListProps> = ({
           />
         </div>
         
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2">
           <Select value={filterKey} onValueChange={setFilterKey}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-full sm:w-[180px]">
               <SelectValue placeholder="Filtrar por Tom" />
             </SelectTrigger>
             <SelectContent>
@@ -103,8 +103,8 @@ export const SongList: React.FC<SongListProps> = ({
             </SelectContent>
           </Select>
           
-          <Button onClick={onNew}>
-            <FileMusic size={16} className="mr-2" />
+          <Button onClick={onNew} className="w-full sm:w-auto whitespace-nowrap">
+            <Plus size={16} className="mr-2" />
             Nova Música
           </Button>
         </div>
@@ -124,50 +124,52 @@ export const SongList: React.FC<SongListProps> = ({
         <div className="space-y-3">
           {filteredSongs.map(song => (
             <div key={song.id} className="p-4 border rounded-md hover:bg-gray-50 transition-colors duration-200">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center">
-                  <div className="bg-church-light p-3 rounded-lg text-church-primary mr-3">
+                  <div className="bg-church-light p-3 rounded-lg text-church-primary mr-3 shrink-0">
                     <FileText size={18} />
                   </div>
-                  <div>
-                    <h3 className="font-medium">{song.title}</h3>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-medium truncate">{song.title}</h3>
                     <p className="text-xs text-gray-500 mt-1">
                       {song.artist} • Tom: {song.key} {song.bpm && `• ${song.bpm} BPM`} • Atualizado em {song.lastUpdated}
                     </p>
                   </div>
                 </div>
-                <div className="flex space-x-1">
+                <div className="flex items-center justify-end gap-1">
+                  <div className="flex -space-x-1 sm:space-x-1">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-8 w-8 p-0" 
+                      onClick={() => handleView(song.id)}
+                      title="Visualizar"
+                    >
+                      <Eye size={16} />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-8 w-8 p-0" 
+                      onClick={() => onEdit(song.id)}
+                      title="Editar"
+                    >
+                      <Edit size={16} />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-8 w-8 p-0" 
+                      onClick={() => handleDelete(song.id)}
+                      title="Excluir"
+                    >
+                      <Trash2 size={16} />
+                    </Button>
+                  </div>
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    className="h-8 w-8 p-0" 
-                    onClick={() => handleView(song.id)}
-                    title="Visualizar"
-                  >
-                    <Eye size={16} />
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-8 w-8 p-0" 
-                    onClick={() => onEdit(song.id)}
-                    title="Editar"
-                  >
-                    <Edit size={16} />
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-8 w-8 p-0" 
-                    onClick={() => handleDelete(song.id)}
-                    title="Excluir"
-                  >
-                    <Trash2 size={16} />
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="flex items-center"
+                    className="hidden sm:flex items-center"
                     onClick={() => handleView(song.id)}
                   >
                     <span>Ver Música</span>

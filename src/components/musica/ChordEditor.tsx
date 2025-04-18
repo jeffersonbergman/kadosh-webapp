@@ -105,11 +105,11 @@ export const ChordEditor: React.FC<ChordEditorProps> = ({
   
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-4">
-        <div className="flex items-center space-x-2">
-          <Label htmlFor="key">Tom:</Label>
+      <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-4">
+        <div className="flex items-center space-x-2 w-full sm:w-auto">
+          <Label htmlFor="key" className="whitespace-nowrap">Tom:</Label>
           <Select value={selectedKey} onValueChange={handleKeyChange}>
-            <SelectTrigger className="w-24">
+            <SelectTrigger className="w-full sm:w-24">
               <SelectValue placeholder="Tom" />
             </SelectTrigger>
             <SelectContent>
@@ -129,12 +129,12 @@ export const ChordEditor: React.FC<ChordEditorProps> = ({
           </Select>
         </div>
         
-        <div className="flex items-center space-x-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Button 
             variant="outline" 
             size="sm" 
             onClick={transposeUp} 
-            className="flex items-center"
+            className="flex items-center w-full sm:w-auto"
           >
             <ChevronUp size={16} className="mr-1" />
             <span>Subir Tom</span>
@@ -143,32 +143,34 @@ export const ChordEditor: React.FC<ChordEditorProps> = ({
             variant="outline" 
             size="sm" 
             onClick={transposeDown} 
-            className="flex items-center"
+            className="flex items-center w-full sm:w-auto"
           >
             <ChevronDown size={16} className="mr-1" />
             <span>Baixar Tom</span>
           </Button>
         </div>
         
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={resetToOriginal} 
-          className="flex items-center"
-        >
-          <RotateCcw size={16} className="mr-1" />
-          <span>Restaurar Original</span>
-        </Button>
-        
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={insertChordMarker} 
-          className="flex items-center"
-        >
-          <Music size={16} className="mr-1" />
-          <span>Inserir Acorde</span>
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={resetToOriginal} 
+            className="flex items-center w-full sm:w-auto"
+          >
+            <RotateCcw size={16} className="mr-1" />
+            <span>Restaurar Original</span>
+          </Button>
+          
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={insertChordMarker} 
+            className="flex items-center w-full sm:w-auto"
+          >
+            <Music size={16} className="mr-1" />
+            <span>Inserir Acorde</span>
+          </Button>
+        </div>
       </div>
       
       <Textarea 
