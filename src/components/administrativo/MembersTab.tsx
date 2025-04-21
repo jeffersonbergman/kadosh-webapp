@@ -8,8 +8,49 @@ import { useNavigate } from 'react-router-dom';
 import { AccessEditModal } from './AccessEditModal';
 
 const initialMembers = [
+  // DEMO ADM
   {
     id: 1,
+    name: "Pr. Lucas Almeida",
+    email: "lucas.almeida@igreja.com",
+    phone: "(11) 98888-0001",
+    status: "Ativo",
+    registered: "01/01/2024",
+    access: "adm",
+  },
+  // DEMO FINANCEIRO
+  {
+    id: 2,
+    name: "Sandra Martins",
+    email: "sandra.financeiro@igreja.com",
+    phone: "(11) 97777-0002",
+    status: "Ativo",
+    registered: "10/02/2024",
+    access: "financeiro",
+  },
+  // DEMO LOUVOR
+  {
+    id: 3,
+    name: "Felipe Louvor",
+    email: "felipe.louvor@igreja.com",
+    phone: "(11) 96666-0003",
+    status: "Ativo",
+    registered: "05/03/2024",
+    access: "louvor",
+  },
+  // DEMO NENHUM
+  {
+    id: 4,
+    name: "Mariana Souza",
+    email: "mariana.souza@igreja.com",
+    phone: "(11) 95555-0004",
+    status: "Ativo",
+    registered: "15/04/2024",
+    access: "none",
+  },
+  // ... membros de exemplo originais ...
+  {
+    id: 5,
     name: "João Silva",
     email: "joao.silva@email.com",
     phone: "(11) 98765-4321",
@@ -18,7 +59,7 @@ const initialMembers = [
     access: "adm",
   },
   {
-    id: 2,
+    id: 6,
     name: "Maria Oliveira",
     email: "maria.oliveira@email.com",
     phone: "(11) 97654-3210",
@@ -27,7 +68,7 @@ const initialMembers = [
     access: "financeiro",
   },
   {
-    id: 3,
+    id: 7,
     name: "Pedro Santos",
     email: "pedro.santos@email.com",
     phone: "(11) 95432-1098",
@@ -36,7 +77,7 @@ const initialMembers = [
     access: "louvor",
   },
   {
-    id: 4,
+    id: 8,
     name: "Ana Costa",
     email: "ana.costa@email.com",
     phone: "(11) 92345-6789",
@@ -45,7 +86,7 @@ const initialMembers = [
     access: "none",
   },
   {
-    id: 5,
+    id: 9,
     name: "Carlos Ferreira",
     email: "carlos.ferreira@email.com",
     phone: "(11) 91234-5678",
