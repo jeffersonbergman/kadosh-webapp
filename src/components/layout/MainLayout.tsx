@@ -73,11 +73,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
   return (
     <SidebarProvider>
-      <div className="flex h-screen w-full bg-gray-100 text-gray-700">
-        <Sidebar>
+      <div className="flex h-screen w-full bg-background">
+        <Sidebar variant="floating" className="border-r border-border/10">
           <SidebarContent>
             <SidebarGroup>
-              <SidebarGroupLabel>Menu</SidebarGroupLabel>
+              <SidebarGroupLabel className="font-heading text-lg text-primary">Menu</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
                   {menuItems.map((item) => (
@@ -85,9 +85,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                       <SidebarMenuButton 
                         onClick={item.onClick}
                         tooltip={item.title}
+                        className="hover:bg-accent/50 active:bg-accent/70 group"
                       >
-                        <item.icon className="mr-2" />
-                        <span>{item.title}</span>
+                        <item.icon className="mr-2 h-5 w-5 text-primary group-hover:text-primary/80" />
+                        <span className="font-medium">{item.title}</span>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   ))}
@@ -98,9 +99,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           <SidebarFooter>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton onClick={() => navigate('/login')}>
-                  <LogOut className="mr-2" />
-                  <span>Sair</span>
+                <SidebarMenuButton 
+                  onClick={() => navigate('/login')}
+                  className="text-destructive hover:bg-destructive/10 active:bg-destructive/20 group"
+                >
+                  <LogOut className="mr-2 h-5 w-5 group-hover:text-destructive/80" />
+                  <span className="font-medium">Sair</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
