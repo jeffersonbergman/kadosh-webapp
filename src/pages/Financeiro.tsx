@@ -21,8 +21,8 @@ import {
   calculateFinancialSummary, prepareMonthlyChartData, prepareCategoryChartData, 
   formatCurrency, formatDate 
 } from '@/utils/finance';
+import ReportDialog from '@/components/financeiro/ReportDialog';
 
-// Sample data - in a real app this would come from an API or database
 const sampleTransactions = [
   {
     id: '1',
@@ -98,10 +98,54 @@ const sampleCategories = [
   { id: '5', name: 'Equipamentos', type: 'saida', description: 'Compra de equipamentos diversos' }
 ];
 
+const sampleReports = [
+  {
+    id: '1',
+    title: 'Balanço Financeiro Anual',
+    description: 'Resumo completo das movimentações de 2025, incluindo análise detalhada por categoria e comparativo com o ano anterior.',
+    data: {
+      totalIncome: 8200,
+      totalExpenses: 4870,
+      balance: 3330,
+      topCategories: [
+        { name: 'Dízimos e Ofertas', amount: 7700, percentage: 94 },
+        { name: 'Eventos', amount: 500, percentage: 6 },
+      ],
+    }
+  },
+  {
+    id: '2',
+    title: 'Relatório Mensal (Abril/2025)',
+    description: 'Detalhamento das atividades financeiras no mês atual, incluindo todas as entradas e saídas categorizadas.',
+    data: {
+      totalIncome: 2350,
+      totalExpenses: 570,
+      balance: 1780,
+      topCategories: [
+        { name: 'Dízimos e Ofertas', amount: 2350, percentage: 100 },
+        { name: 'Manutenção', amount: 570, percentage: 100 },
+      ],
+    }
+  },
+  {
+    id: '3',
+    title: 'Comparativo Semestral',
+    description: 'Análise comparativa dos últimos 6 meses, mostrando tendências e variações nas principais categorias.',
+    data: {
+      totalIncome: 5850,
+      totalExpenses: 4300,
+      balance: 1550,
+      topCategories: [
+        { name: 'Dízimos e Ofertas', amount: 5350, percentage: 91 },
+        { name: 'Eventos', amount: 500, percentage: 9 },
+      ],
+    }
+  },
+];
+
 const Financeiro = () => {
   const { toast } = useToast();
   
-  // State
   const [transactions, setTransactions] = useState(sampleTransactions);
   const [categories, setCategories] = useState(sampleCategories);
   const [currentTab, setCurrentTab] = useState('movimentacoes');
@@ -110,38 +154,33 @@ const Financeiro = () => {
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<any>(null);
-  
-  // Calculate financial summary
+  const [selectedReport, setSelectedReport] = useState<any>(null);
+  const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
+
   const summary = calculateFinancialSummary(transactions);
 
-  // Prepare data for charts
   const monthlyChartData = prepareMonthlyChartData(transactions);
   const categoryChartData = prepareCategoryChartData(transactions, categories);
   
-  // Filtering transactions based on search term
   const filteredTransactions = transactions.filter(transaction => 
     transaction.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Map category IDs to names for display
   const categoryMap = categories.reduce((map, cat) => {
     map[cat.id] = { name: cat.name, type: cat.type };
     return map;
   }, {} as Record<string, {name: string, type: string}>);
   
-  // Handlers
   const handleAddTransaction = (newTransaction: any) => {
     setTransactions([newTransaction, ...transactions]);
   };
   
   const handleAddCategory = (newCategory: any) => {
     if (editingCategory) {
-      // Update existing category
       setCategories(categories.map(cat => 
         cat.id === newCategory.id ? newCategory : cat
       ));
     } else {
-      // Add new category
       setCategories([...categories, newCategory]);
     }
   };
@@ -165,7 +204,6 @@ const Financeiro = () => {
       return;
     }
     
-    // Format transactions for export (with category names instead of IDs)
     const formattedTransactions = transactions.map(transaction => ({
       ...transaction,
       category: categoryMap[transaction.category]?.name || 'Sem categoria',
@@ -196,6 +234,12 @@ const Financeiro = () => {
         variant: "destructive"
       });
     }
+  };
+
+  const handleViewReport = (reportId: string) => {
+    const report = sampleReports.find(r => r.id === reportId);
+    setSelectedReport(report);
+    setIsReportDialogOpen(true);
   };
 
   return (
@@ -473,36 +517,24 @@ const Financeiro = () => {
                 
                 <h3 className="font-semibold mb-3">Relatórios Disponíveis</h3>
                 <ul className="space-y-2">
-                  <li className="flex items-center justify-between p-3 border rounded-md hover:bg-gray-50">
-                    <div className="flex items-center">
-                      <FileText size={18} className="mr-3 text-church-primary" />
-                      <div>
-                        <p className="font-medium">Balanço Financeiro Anual</p>
-                        <p className="text-xs text-gray-500">Resumo completo das movimentações de 2025</p>
+                  {sampleReports.map((report) => (
+                    <li key={report.id} className="flex items-center justify-between p-3 border rounded-md hover:bg-gray-50">
+                      <div className="flex items-center">
+                        <FileText size={18} className="mr-3 text-church-primary" />
+                        <div>
+                          <p className="font-medium">{report.title}</p>
+                          <p className="text-xs text-gray-500">{report.description}</p>
+                        </div>
                       </div>
-                    </div>
-                    <Button variant="ghost" size="sm">Visualizar</Button>
-                  </li>
-                  <li className="flex items-center justify-between p-3 border rounded-md hover:bg-gray-50">
-                    <div className="flex items-center">
-                      <FileText size={18} className="mr-3 text-church-primary" />
-                      <div>
-                        <p className="font-medium">Relatório Mensal (Abril/2025)</p>
-                        <p className="text-xs text-gray-500">Detalhamento das atividades no mês atual</p>
-                      </div>
-                    </div>
-                    <Button variant="ghost" size="sm">Visualizar</Button>
-                  </li>
-                  <li className="flex items-center justify-between p-3 border rounded-md hover:bg-gray-50">
-                    <div className="flex items-center">
-                      <FileText size={18} className="mr-3 text-church-primary" />
-                      <div>
-                        <p className="font-medium">Comparativo Semestral</p>
-                        <p className="text-xs text-gray-500">Análise comparativa dos últimos 6 meses</p>
-                      </div>
-                    </div>
-                    <Button variant="ghost" size="sm">Visualizar</Button>
-                  </li>
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => handleViewReport(report.id)}
+                      >
+                        Visualizar
+                      </Button>
+                    </li>
+                  ))}
                 </ul>
               </CardContent>
             </Card>
@@ -510,7 +542,6 @@ const Financeiro = () => {
         </Tabs>
       </div>
 
-      {/* Dialogs */}
       <TransactionDialog 
         isOpen={isTransactionDialogOpen}
         onClose={() => setIsTransactionDialogOpen(false)}
@@ -532,6 +563,12 @@ const Financeiro = () => {
         isOpen={isImportDialogOpen}
         onClose={() => setIsImportDialogOpen(false)}
         onImport={handleImportData}
+      />
+      
+      <ReportDialog 
+        isOpen={isReportDialogOpen}
+        onClose={() => setIsReportDialogOpen(false)}
+        report={selectedReport}
       />
     </MainLayout>
   );
