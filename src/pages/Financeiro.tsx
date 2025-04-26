@@ -5,23 +5,19 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { 
-  Table, TableHeader, TableBody, TableHead, TableRow, TableCell
-} from "@/components/ui/table";
-import { 
-  DollarSign, FileText, Tag, Download, Upload, PlusCircle, 
-  TrendingUp, TrendingDown, BarChart3, PieChart, Search, Filter, Calendar
-} from 'lucide-react';
+import { Upload, Download, PlusCircle, Search, Filter, Calendar, FileText } from 'lucide-react';
 import TransactionDialog from '@/components/financeiro/TransactionDialog';
 import CategoryDialog from '@/components/financeiro/CategoryDialog';
 import ImportDialog from '@/components/financeiro/ImportDialog';
-import { MonthlyBarChart, CategoryPieChart } from '@/components/financeiro/FinanceCharts';
+import ReportDialog from '@/components/financeiro/ReportDialog';
+import FinancialSummaryCards from '@/components/financeiro/FinancialSummaryCards';
+import TransactionsTable from '@/components/financeiro/TransactionsTable';
+import ReportsList from '@/components/financeiro/ReportsList';
+import FinancialCharts from '@/components/financeiro/FinancialCharts';
 import { 
   exportToCSV, exportToExcel, exportToPDF, 
-  calculateFinancialSummary, prepareMonthlyChartData, prepareCategoryChartData, 
-  formatCurrency, formatDate 
+  calculateFinancialSummary, prepareMonthlyChartData, prepareCategoryChartData
 } from '@/utils/finance';
-import ReportDialog from '@/components/financeiro/ReportDialog';
 
 const sampleTransactions = [
   {
@@ -158,7 +154,6 @@ const Financeiro = () => {
   const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
 
   const summary = calculateFinancialSummary(transactions);
-
   const monthlyChartData = prepareMonthlyChartData(transactions);
   const categoryChartData = prepareCategoryChartData(transactions, categories);
   
@@ -170,7 +165,7 @@ const Financeiro = () => {
     map[cat.id] = { name: cat.name, type: cat.type };
     return map;
   }, {} as Record<string, {name: string, type: string}>);
-  
+
   const handleAddTransaction = (newTransaction: any) => {
     setTransactions([newTransaction, ...transactions]);
   };
@@ -271,48 +266,7 @@ const Financeiro = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <Card>
-            <CardHeader className="py-4">
-              <CardTitle className="text-base font-medium flex items-center">
-                <DollarSign size={18} className="mr-2 text-church-primary" />
-                Saldo Atual
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(summary.currentBalance)}</div>
-              <p className="text-xs text-gray-500 mt-1">Atualizado em {formatDate(new Date().toISOString())}</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="py-4">
-              <CardTitle className="text-base font-medium flex items-center">
-                <TrendingUp size={18} className="mr-2 text-green-600" />
-                Entradas do Mês
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(summary.currentIncome)}</div>
-              <p className={`text-xs mt-1 ${summary.incomeChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                {summary.incomeChange >= 0 ? '+' : ''}{summary.incomeChange.toFixed(0)}% em relação ao mês anterior
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="py-4">
-              <CardTitle className="text-base font-medium flex items-center">
-                <TrendingDown size={18} className="mr-2 text-red-600" />
-                Saídas do Mês
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(summary.currentExpenses)}</div>
-              <p className={`text-xs mt-1 ${summary.expensesChange >= 0 ? 'text-red-600' : 'text-green-600'}`}>
-                {summary.expensesChange >= 0 ? '+' : ''}{summary.expensesChange.toFixed(0)}% em relação ao mês anterior
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+        <FinancialSummaryCards summary={summary} />
 
         <Tabs defaultValue="movimentacoes" className="mb-6" value={currentTab} onValueChange={setCurrentTab}>
           <TabsList className="grid w-full grid-cols-3 md:w-auto md:inline-flex">
@@ -349,52 +303,10 @@ const Financeiro = () => {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="rounded-md border">
-                  <div className="relative w-full overflow-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Data</TableHead>
-                          <TableHead>Descrição</TableHead>
-                          <TableHead>Categoria</TableHead>
-                          <TableHead className="text-right">Valor</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {filteredTransactions.length > 0 ? (
-                          filteredTransactions.map((transaction) => (
-                            <TableRow key={transaction.id} className="hover:bg-muted/50">
-                              <TableCell>{formatDate(transaction.date)}</TableCell>
-                              <TableCell>{transaction.description}</TableCell>
-                              <TableCell>
-                                {categoryMap[transaction.category] && (
-                                  <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                                    categoryMap[transaction.category].type === 'entrada' 
-                                      ? 'bg-green-100 text-green-800' 
-                                      : 'bg-red-100 text-red-800'
-                                  }`}>
-                                    {categoryMap[transaction.category].name}
-                                  </span>
-                                )}
-                              </TableCell>
-                              <TableCell className={`text-right ${
-                                transaction.type === 'entrada' ? 'text-green-600' : 'text-red-600'
-                              }`}>
-                                {formatCurrency(transaction.amount)}
-                              </TableCell>
-                            </TableRow>
-                          ))
-                        ) : (
-                          <TableRow>
-                            <TableCell colSpan={4} className="text-center py-6 text-gray-500">
-                              Nenhuma transação encontrada
-                            </TableCell>
-                          </TableRow>
-                        )}
-                      </TableBody>
-                    </Table>
-                  </div>
-                </div>
+                <TransactionsTable 
+                  transactions={filteredTransactions}
+                  categoryMap={categoryMap}
+                />
                 <div className="flex justify-center mt-4">
                   <Button variant="outline" size="sm">Carregar Mais</Button>
                 </div>
@@ -414,51 +326,22 @@ const Financeiro = () => {
                     setEditingCategory(null);
                     setIsCategoryDialogOpen(true);
                   }}>
-                    <Tag size={16} className="mr-2" /> Nova Categoria
+                    <FileText size={16} className="mr-2" /> Nova Categoria
                   </Button>
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="rounded-md border">
-                  <div className="relative w-full overflow-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Nome</TableHead>
-                          <TableHead>Tipo</TableHead>
-                          <TableHead>Descrição</TableHead>
-                          <TableHead>Ações</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {categories.map((category) => (
-                          <TableRow key={category.id} className="hover:bg-muted/50">
-                            <TableCell className="font-medium">{category.name}</TableCell>
-                            <TableCell>
-                              <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                                category.type === 'entrada' 
-                                  ? 'bg-green-100 text-green-800' 
-                                  : 'bg-red-100 text-red-800'
-                              }`}>
-                                {category.type === 'entrada' ? 'Entrada' : 'Saída'}
-                              </span>
-                            </TableCell>
-                            <TableCell className="text-muted-foreground">{category.description}</TableCell>
-                            <TableCell>
-                              <Button 
-                                variant="ghost" 
-                                size="sm"
-                                onClick={() => handleEditCategory(category)}
-                              >
-                                Editar
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                </div>
+                <TransactionsTable 
+                  transactions={categories.map(cat => ({
+                    id: cat.id,
+                    date: '',
+                    description: cat.description,
+                    category: cat.id,
+                    type: cat.type,
+                    amount: 0
+                  }))}
+                  categoryMap={categoryMap}
+                />
               </CardContent>
             </Card>
           </TabsContent>
@@ -490,52 +373,15 @@ const Financeiro = () => {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <div className="flex items-center justify-between mb-1">
-                        <h3 className="text-sm font-semibold">Entradas vs Saídas (2025)</h3>
-                        <BarChart3 size={18} className="text-church-primary" />
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <MonthlyBarChart data={monthlyChartData} />
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <div className="flex items-center justify-between mb-1">
-                        <h3 className="text-sm font-semibold">Distribuição por Categoria</h3>
-                        <PieChart size={18} className="text-church-primary" />
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <CategoryPieChart data={categoryChartData} />
-                    </CardContent>
-                  </Card>
-                </div>
-                
+                <FinancialCharts 
+                  monthlyChartData={monthlyChartData}
+                  categoryChartData={categoryChartData}
+                />
                 <h3 className="font-semibold mb-3">Relatórios Disponíveis</h3>
-                <ul className="space-y-2">
-                  {sampleReports.map((report) => (
-                    <li key={report.id} className="flex items-center justify-between p-3 border rounded-md hover:bg-gray-50">
-                      <div className="flex items-center">
-                        <FileText size={18} className="mr-3 text-church-primary" />
-                        <div>
-                          <p className="font-medium">{report.title}</p>
-                          <p className="text-xs text-gray-500">{report.description}</p>
-                        </div>
-                      </div>
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => handleViewReport(report.id)}
-                      >
-                        Visualizar
-                      </Button>
-                    </li>
-                  ))}
-                </ul>
+                <ReportsList 
+                  reports={sampleReports}
+                  onViewReport={handleViewReport}
+                />
               </CardContent>
             </Card>
           </TabsContent>
