@@ -4,7 +4,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend
 } from 'recharts';
-import { formatCurrency } from '@/utils/financeUtils';
+import { formatCurrency } from '@/utils/finance/formatters';
 
 interface BarChartProps {
   data: any[];

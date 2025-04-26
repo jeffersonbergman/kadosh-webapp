@@ -32,7 +32,7 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ transactions, cat
             {transactions.length > 0 ? (
               transactions.map((transaction) => (
                 <TableRow key={transaction.id} className="hover:bg-muted/50">
-                  <TableCell>{formatDate(transaction.date)}</TableCell>
+                  <TableCell>{transaction.date ? formatDate(transaction.date) : '-'}</TableCell>
                   <TableCell>{transaction.description}</TableCell>
                   <TableCell>
                     {categoryMap[transaction.category] && (

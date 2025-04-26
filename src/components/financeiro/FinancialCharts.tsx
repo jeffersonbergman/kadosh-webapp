@@ -13,6 +13,10 @@ const FinancialCharts: React.FC<FinancialChartsProps> = ({
   monthlyChartData, 
   categoryChartData 
 }) => {
+  // Ensure we have valid data arrays
+  const safeMonthlyData = Array.isArray(monthlyChartData) ? monthlyChartData : [];
+  const safeCategoryData = Array.isArray(categoryChartData) ? categoryChartData : [];
+  
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <Card>
@@ -23,7 +27,7 @@ const FinancialCharts: React.FC<FinancialChartsProps> = ({
           </div>
         </CardHeader>
         <CardContent>
-          <MonthlyBarChart data={monthlyChartData} />
+          <MonthlyBarChart data={safeMonthlyData} />
         </CardContent>
       </Card>
       <Card>
@@ -34,7 +38,7 @@ const FinancialCharts: React.FC<FinancialChartsProps> = ({
           </div>
         </CardHeader>
         <CardContent>
-          <CategoryPieChart data={categoryChartData} />
+          <CategoryPieChart data={safeCategoryData} />
         </CardContent>
       </Card>
     </div>
