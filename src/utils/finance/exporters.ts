@@ -5,12 +5,22 @@
  */
 import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
-import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { formatCurrency, formatDate, formatDateForFilename } from './formatters';
 
+// Types for transaction data
+interface TransactionData {
+  date: string;
+  description: string;
+  category: string;
+  type: string;
+  amount: number;
+  [key: string]: any; // For any additional fields
+}
+
 // Export transactions to CSV
-export const exportToCSV = (data: any[], filename: string = 'transacoes'): void => {
+export const exportToCSV = (data: TransactionData[], filename: string = 'transacoes'): void => {
   // Convert data to CSV format
   const headers = Object.keys(data[0]).join(',');
   const rows = data.map(item => Object.values(item).join(','));
@@ -22,7 +32,7 @@ export const exportToCSV = (data: any[], filename: string = 'transacoes'): void 
 };
 
 // Export transactions to Excel
-export const exportToExcel = (data: any[], filename: string = 'transacoes'): void => {
+export const exportToExcel = (data: TransactionData[], filename: string = 'transacoes'): void => {
   // Format data for Excel
   const formattedData = data.map(item => ({
     Data: formatDate(item.date),
@@ -42,7 +52,8 @@ export const exportToExcel = (data: any[], filename: string = 'transacoes'): voi
 };
 
 // Export transactions to PDF
-export const exportToPDF = (data: any[], filename: string = 'transacoes'): void => {
+export const exportToPDF = (data: TransactionData[], filename: string = 'transacoes'): void => {
+  // Initialize jsPDF
   const doc = new jsPDF();
   
   // Add title
@@ -62,8 +73,8 @@ export const exportToPDF = (data: any[], filename: string = 'transacoes'): void 
     formatCurrency(item.amount)
   ]);
   
-  // Add table
-  (doc as any).autoTable({
+  // Add table with autoTable
+  autoTable(doc, {
     startY: 40,
     head: [['Data', 'Descrição', 'Categoria', 'Tipo', 'Valor']],
     body: tableData,
