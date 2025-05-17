@@ -10,12 +10,19 @@ interface AppContextProps {
   setTheme: (theme: string) => void;
   language: string;
   setLanguage: (language: string) => void;
-  login?: (username: string, password: string) => Promise<boolean>;
+  login: (username: string, password: string) => Promise<boolean>;
 }
 
-// Create the context with a default value that's null
-// This avoids deep type instantiation issues
-export const AppContext = createContext<AppContextProps | null>(null);
+// Create context with default values
+export const AppContext = createContext<AppContextProps>({
+  isAuthenticated: false,
+  setIsAuthenticated: () => {},
+  theme: 'light',
+  setTheme: () => {},
+  language: 'pt',
+  setLanguage: () => {},
+  login: async () => false
+});
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -52,11 +59,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   );
 };
 
-// Custom hook that handles the null check
+// Custom hook that safely uses the context
 export const useApp = () => {
   const context = useContext(AppContext);
-  if (context === null) {
-    throw new Error('useApp must be used within an AppProvider');
-  }
   return context;
 };
